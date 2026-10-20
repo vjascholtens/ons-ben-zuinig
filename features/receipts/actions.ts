@@ -59,17 +59,15 @@ export async function saveReceiptReview(
     confirmedData = { supplier, documentDate, invoiceNumber, netAmount, vatAmount, grossAmount, vatTreatment, currencyCode: "EUR" };
   }
 
-  const { error } = await supabase.from("receipt_extractions").upsert({
-    receipt_id: receiptId,
-    proposal: existing.proposal,
+  const { data: saved, error } = await supabase.from("receipt_extractions").update({
     confirmed_data: confirmedData,
     decision_status: decision,
     reviewed_at: new Date().toISOString(),
     reviewed_by: userId,
     updated_at: new Date().toISOString(),
-  }, { onConflict: "receipt_id" });
+  }).eq("receipt_id", receiptId).select("receipt_id").single();
 
-  if (error) return { ok: false, message: "De controle kon niet veilig worden opgeslagen." };
+  if (error || !saved) return { ok: false, message: "De controle kon niet veilig worden opgeslagen." };
   revalidatePath("/receipts");
   revalidatePath(`/receipts/${receiptId}`);
   return { ok: true, message: decision === "confirmed" ? "Gecontroleerde documentgegevens opgeslagen." : "Voorstel afgewezen." };
