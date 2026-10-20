@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "currency": "EUR",
+  "roundingMethod": "per_line",
+  "scenarios": [
+    {
+      "id": "standard-21",
+      "description": "Synthetische binnenlandse levering onder het algemene tarief",
+      "netAmount": "100.00",
+      "vatTreatment": "standard",
+      "vatRate": "21.00",
+      "vatAmount": "21.00",
+      "grossAmount": "121.00"
+    },
+    {
+      "id": "reduced-9",
+      "description": "Synthetische prestatie waarvan is bevestigd dat het verlaagde tarief geldt",
+      "netAmount": "100.00",
+      "vatTreatment": "standard",
+      "vatRate": "9.00",
+      "vatAmount": "9.00",
+      "grossAmount": "109.00"
+    },
+    {
+      "id": "zero-rate",
+      "description": "Synthetische prestatie met expliciete wettelijke grond voor het nultarief",
+      "netAmount": "100.00",
+      "vatTreatment": "zero_rate",
+      "vatRate": "0.00",
+      "vatAmount": "0.00",
+      "grossAmount": "100.00",
+      "requiresReason": true
+    },
+    {
+      "id": "exempt",
+      "description": "Synthetische vrijgestelde prestatie; niet coderen als nultarief",
+      "netAmount": "100.00",
+      "vatTreatment": "exempt",
+      "vatRate": null,
+      "vatAmount": null,
+      "grossAmount": "100.00",
+      "requiresReason": true
+    },
+    {
+      "id": "reverse-charge",
+      "description": "Synthetisch geval waarin verlegging juridisch is vastgesteld",
+      "netAmount": "100.00",
+      "vatTreatment": "reverse_charge",
+      "vatRate": null,
+      "vatAmount": null,
+      "grossAmount": "100.00",
+      "invoiceNote": "btw verlegd",
+      "buyerVatIdRequiredWhenApplicable": true
+    },
+    {
+      "id": "kor",
+      "description": "Synthetische factuur van een leverancier waarvan KOR-deelname is bevestigd",
+      "netAmount": "100.00",
+      "vatTreatment": "kor",
+      "vatRate": null,
+      "vatAmount": null,
+      "grossAmount": "100.00",
+      "inputVatDeductible": false,
+      "invoiceVatCharged": false
+    }
+  ],
+  "roundingCases": [
+    { "id": "round-down", "rawVat": "20.124", "expectedVat": "20.12" },
+    { "id": "round-half-up", "rawVat": "20.125", "expectedVat": "20.13" }
+  ],
+  "numberingConcurrencyAcceptance": {
+    "requests": 20,
+    "expectedUniqueNumbers": 20,
+    "expectedContiguousSequence": true,
+    "notes": "Integratietest op de finalize-functie; geen echte facturen of gegevens."
+  }
+}
