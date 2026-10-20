@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { getOrCreateAccountingEntity } from "@/lib/server/accounting-entity";
 import { uploadInputSchema, uploadSizeSchema } from "@/lib/validation/schemas";
+import { getSyntheticMockOcrProposal } from "@/features/receipts/mock-ocr";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -93,6 +94,16 @@ export async function POST(request: NextRequest) {
     return jsonError("Het uploadformulier kon niet worden gelezen.", 400);
   }
 
+  const fixtureInput = formData.get("fixtureId");
+  let mockProposal: ReturnType<typeof getSyntheticMockOcrProposal> = null;
+  if (fixtureInput !== null) {
+    if (typeof fixtureInput !== "string" || !fixtureInput.trim()) {
+      return jsonError("Kies een geldige synthetische mock-OCR-fixture.", 400);
+    }
+    mockProposal = getSyntheticMockOcrProposal(fixtureInput);
+    if (!mockProposal) return jsonError("Deze mock-OCR-fixture bestaat niet.", 400);
+  }
+
   const file = formData.get("file");
   if (!(file instanceof File)) {
     return jsonError("Selecteer eerst een foto of PDF.", 400);
@@ -160,8 +171,22 @@ export async function POST(request: NextRequest) {
     return jsonError("Het documentrecord kon niet worden opgeslagen. Het uploadbestand is opgeruimd waar mogelijk.", 500);
   }
 
+  if (mockProposal) {
+    const { error: proposalError } = await supabase.from("receipt_extractions").insert({
+      receipt_id: receipt.id,
+      proposal: mockProposal,
+      decision_status: "pending",
+    });
+    if (proposalError) {
+      return NextResponse.json(
+        { receipt, warning: "Het document is opgeslagen, maar het mock-OCR-voorstel kon niet worden opgeslagen. Open het document later opnieuw." },
+        { status: 201, headers: { "Cache-Control": "private, no-store" } },
+      );
+    }
+  }
+
   return NextResponse.json(
-    { receipt },
+    { receipt, mockOcrCreated: Boolean(mockProposal) },
     { status: 201, headers: { "Cache-Control": "private, no-store" } },
   );
 }
