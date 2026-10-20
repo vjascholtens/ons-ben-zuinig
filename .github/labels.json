@@ -1,0 +1,87 @@
+[
+  {
+    "name": "P0",
+    "color": "b60205",
+    "description": "Blocker/fundament: eerst oppakken"
+  },
+  {
+    "name": "P1",
+    "color": "d93f0b",
+    "description": "Hoge prioriteit voor de MVP"
+  },
+  {
+    "name": "P2",
+    "color": "fbca04",
+    "description": "Normale prioriteit; na P0/P1"
+  },
+  {
+    "name": "decision",
+    "color": "5319e7",
+    "description": "Product- of technische beslissing"
+  },
+  {
+    "name": "chore",
+    "color": "ededed",
+    "description": "Techniek, infrastructuur of onderhoud"
+  },
+  {
+    "name": "feature",
+    "color": "0e8a16",
+    "description": "Gebruikersgerichte functionaliteit"
+  },
+  {
+    "name": "bug",
+    "color": "d73a4a",
+    "description": "Fout in bestaand gedrag"
+  },
+  {
+    "name": "security",
+    "color": "b60205",
+    "description": "Security- en privacywerk"
+  },
+  {
+    "name": "docs",
+    "color": "0075ca",
+    "description": "Documentatie"
+  },
+  {
+    "name": "blocked",
+    "color": "e4e669",
+    "description": "Geblokkeerd door afhankelijkheid"
+  },
+  {
+    "name": "epic",
+    "color": "7057ff",
+    "description": "Overkoepelende functionaliteitsgroep"
+  },
+  {
+    "name": "epic:accounting",
+    "color": "1d76db",
+    "description": "Boekhouding, categorieën en boekingen"
+  },
+  {
+    "name": "epic:invoicing",
+    "color": "0e8a16",
+    "description": "Verkoopfacturen en factuurstatussen"
+  },
+  {
+    "name": "epic:email",
+    "color": "5319e7",
+    "description": "E-mailverzending en maandelijkse totaalmail"
+  },
+  {
+    "name": "epic:ops",
+    "color": "fbca04",
+    "description": "Back-ups, herstel, export en productiebeheer"
+  },
+  {
+    "name": "epic:receipts",
+    "color": "c2e0c6",
+    "description": "Bonnetjes en inkomende bewijsstukken"
+  },
+  {
+    "name": "epic:platform",
+    "color": "bfdadc",
+    "description": "App-stack, infrastructuur en ontwikkelworkflow"
+  }
+]
