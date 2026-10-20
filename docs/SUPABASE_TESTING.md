@@ -62,7 +62,7 @@ Successfully created test receipt records and their corresponding objects are re
 
 ## Limits and manual verification still required
 
-- The script does **not** simulate an actual database insert failure after the Storage write. Verify that cleanup path separately in the prototype using a controlled, temporary failure injection, then remove the injection and record the exact result.
+- `lib/server/receipt-route-cleanup.test.ts` deterministically forces a metadata-insert failure in the API route and asserts that removal of the stored object is attempted; it also covers a failed removal response. This is a repeatable unit test of the cleanup branch, not proof that a live Supabase Storage object was deleted. The live provider cleanup check still requires the controlled prototype failure injection described in this section.
 - RLS isolation is exercised through authenticated Supabase clients. The two parallel first uploads go through `/api/receipts`, so they test the app's race recovery end to end.
 - Review the Supabase Data API exposure setting for `public.accounting_entities` and `public.receipts`; table grants and RLS are separate from whether the tables are exposed through the Data API.
 - A successful prototype test does not approve the privacy gate for real documents. Review current terms/DPA, subprocessors, data flows, logging/support access, Storage/CDN behavior, retention/deletion and backup/restore first.
