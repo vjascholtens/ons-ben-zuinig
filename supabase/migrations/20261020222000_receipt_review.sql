@@ -1,4 +1,4 @@
--- Keep the original proposal separate from the values confirmed by the user.
+-- Preserve proposals separately from user-confirmed values.
 create table if not exists public.receipt_extractions (
   receipt_id uuid primary key references public.receipts(id) on delete cascade,
   proposal jsonb not null, confirmed_data jsonb,
@@ -6,11 +6,9 @@ create table if not exists public.receipt_extractions (
   proposed_at timestamptz not null default now(), reviewed_at timestamptz,
   reviewed_by uuid references auth.users(id) on delete restrict,
   created_at timestamptz not null default now(), updated_at timestamptz not null default now(),
-  check (
-    (decision_status = 'pending' and confirmed_data is null and reviewed_at is null and reviewed_by is null)
+  check ((decision_status = 'pending' and confirmed_data is null and reviewed_at is null and reviewed_by is null)
     or (decision_status = 'confirmed' and confirmed_data is not null and reviewed_at is not null and reviewed_by is not null)
-    or (decision_status = 'rejected' and confirmed_data is null and reviewed_at is not null and reviewed_by is not null)
-  )
+    or (decision_status = 'rejected' and confirmed_data is null and reviewed_at is not null and reviewed_by is not null))
 );
 alter table public.receipt_extractions enable row level security;
 create policy "Owners can read receipt extractions" on public.receipt_extractions for select to authenticated
