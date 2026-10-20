@@ -34,4 +34,4 @@ Een betrouwbare administratie waarin bewijsstukken, facturen, transacties, boeki
 
 ## Ontwikkeling
 
-De definitieve app-stack en bijbehorende build/test-commando's worden in de eerste beslisfase vastgelegd. De huidige GitHub Actions-workflow controleert de workflow-configuratie en whitespace; dit is nadrukkelijk nog geen applicatie-CI.
+De definitieve app-stack en bijbehorende build/test-commando's worden in de eerste beslisfase vastgelegd. De huidige GitHub Actions-workflow controleert de YAML-syntaxis van de GitHub-configuratie. Dit is nadrukkelijk nog geen applicatie-CI.
