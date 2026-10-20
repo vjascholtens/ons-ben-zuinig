@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ReceiptReviewForm, type ReviewDraft } from "@/features/receipts/receipt-review-form";
 import { createClient } from "@/lib/supabase/server";
