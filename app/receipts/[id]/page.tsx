@@ -27,7 +27,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
 
   return (
     <main className="mx-auto grid w-full max-w-3xl gap-6 p-4 sm:p-8">
-      <Button variant="outline" className="w-fit"><Link href="/receipts">Terug naar documenten</Link></Button>
+      <Link href="/receipts" className="inline-flex min-h-9 w-fit items-center rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-900 hover:bg-neutral-100">Terug naar documenten</Link>
       <Card>
         <CardHeader><CardTitle>{receipt.original_filename}</CardTitle><p className="text-sm text-neutral-500">{receipt.content_type} · {new Date(receipt.created_at).toLocaleDateString("nl-NL")}</p></CardHeader>
         <CardContent><ReceiptReviewForm receiptId={receipt.id} proposal={proposal} /></CardContent>
