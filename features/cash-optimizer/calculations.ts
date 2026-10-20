@@ -32,6 +32,7 @@ const PERCENT_SCALE = 10_000n; // percent values with up to four decimal places
 function parseDate(date: string): { year: number; month: number; day: number; utc: number } {
   if (!/^\d{4}-\d{2}-\d{2}$/u.test(date)) throw new Error(`Invalid ISO date: ${date}`);
   const [year, month, day] = date.split("-").map(Number);
+  if (year < 1900 || year > 9999) throw new Error("Date year must be between 1900 and 9999.");
   const utc = Date.UTC(year, month - 1, day);
   const parsed = new Date(utc);
   if (parsed.getUTCFullYear() !== year || parsed.getUTCMonth() !== month - 1 || parsed.getUTCDate() !== day) {
@@ -79,6 +80,7 @@ export function getNetherlandsPublicHolidays(year: number, options: NetherlandsC
   const easter = easterSunday(year);
   const holidays = new Set<DateOnly>([
     `${year}-01-01`,
+    easter, // Easter Sunday
     addCalendarDays(easter, 1), // Easter Monday
     addCalendarDays(easter, 39), // Ascension Day
     addCalendarDays(easter, 49), // Whit Sunday
@@ -200,6 +202,7 @@ export function evaluateEarlyPaymentDiscount(input: {
   const amountCents = parseScaledDecimal(input.grossAmount, MONEY_SCALE, 2, "grossAmount");
   const discountRate = parseScaledDecimal(input.discountPercent, PERCENT_SCALE, 4, "discountPercent");
   const financingRate = parseScaledDecimal(input.annualFinancingRatePercent, PERCENT_SCALE, 4, "annualFinancingRatePercent");
+  if (discountRate > 100n * PERCENT_SCALE) throw new Error("discountPercent cannot exceed 100.");
   const deadline = parseDate(input.discountDeadline);
   const dueDate = parseDate(input.normalDueDate);
   const daysPaidEarly = Math.max(0, Math.round((dueDate.utc - deadline.utc) / DAY_MS));
