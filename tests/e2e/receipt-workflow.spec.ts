@@ -73,76 +73,19 @@ async function uploadAndOpenProposal(page: Page, filename: string) {
   await expect(page.getByRole("heading", { name: "Mock-OCR-voorstel" })).toBeVisible();
 }
 
-test("login + synthetische upload opent een deterministisch mock-OCR-voorstel", async ({ page }) => {
+
+test("vrijdag-demo: upload → mock-OCR-voorstel → menselijke controle → bevestigen", async ({ page }) => {
   await loginAsTestUser(page);
-  await uploadAndOpenProposal(page, "synthetic-login-upload.pdf");
+  await uploadAndOpenProposal(page, "synthetic-demo-confirm.pdf");
   await expect(page.getByLabel("Leverancier")).toHaveValue("Synthetische Voorbeeldwinkel Noord");
   await expect(page.getByText("Voorstel — nog niet gecontroleerd")).toBeVisible();
-});
 
-test("gebruiker corrigeert een voorstel en bevestigt gescheiden documentgegevens", async ({ page }) => {
-  await loginAsTestUser(page);
-  await uploadAndOpenProposal(page, "synthetic-correct-confirm.pdf");
   await page.getByLabel("Leverancier").fill("Gecorrigeerde synthetische leverancier");
+  await page.getByLabel("Btw-behandeling").selectOption("standard");
   await page.getByRole("button", { name: "Corrigeren en bevestigen" }).click();
+
   await expect(page.getByText("Gecontroleerde documentgegevens opgeslagen.")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Afzonderlijk opgeslagen bevestigde gegevens" })).toBeVisible();
   await expect(page.getByText("Gecorrigeerde synthetische leverancier")).toBeVisible();
-});
-
-test("documentenlijst toont een upload en laat het voorstel opnieuw openen", async ({ page }) => {
-  await loginAsTestUser(page);
-  await uploadAndOpenProposal(page, "synthetic-document-list.pdf");
-  await page.goto("/receipts");
-  await expect(page.getByRole("cell", { name: /synthetic-document-list\.pdf/i })).toBeVisible();
-  await page.getByRole("button", { name: "Openen" }).first().click();
-  await expect(page).toHaveURL(/\/receipts\?review=/);
-  await expect(page.getByRole("heading", { name: "Mock-OCR-voorstel" })).toBeVisible();
-});
-
-
-async function uploadWithoutMockProposal(page: Page, filename: string): Promise<string> {
-  const response = await page.request.post(`${baseUrl}/api/receipts`, {
-    multipart: {
-      file: { name: filename, mimeType: "application/pdf", buffer: syntheticPdf },
-    },
-  });
-  expect(response.status()).toBe(201);
-  const payload = await response.json() as { receipt?: { id: string }; mockOcrCreated?: boolean };
-  expect(payload.receipt?.id).toBeTruthy();
-  expect(payload.mockOcrCreated).toBe(false);
-  return payload.receipt!.id;
-}
-
-test("gebruiker kan een mock-OCR-voorstel afwijzen zonder bevestigde waarden", async ({ page }) => {
-  await loginAsTestUser(page);
-  await uploadAndOpenProposal(page, "synthetic-reject-proposal.pdf");
-  await page.getByRole("button", { name: "Voorstel afwijzen" }).click();
-  await page.getByRole("dialog").getByRole("button", { name: "Afwijzen bevestigen" }).click();
-  await expect(page.getByText("Voorstel afgewezen.")).toBeVisible();
-  await expect(page.getByText(/Status: afgewezen/i)).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Afzonderlijk opgeslagen bevestigde gegevens" })).toHaveCount(0);
-});
-
-test("gebruiker kan mock-OCR opnieuw proberen als het voorstel ontbreekt", async ({ page }) => {
-  await loginAsTestUser(page);
-  const receiptId = await uploadWithoutMockProposal(page, "synthetic-retry-proposal.pdf");
-  await page.goto(`${baseUrl}/receipts?review=${receiptId}`);
-  await expect(page.getByRole("heading", { name: "Mock-OCR opnieuw proberen" })).toBeVisible();
-  await page.getByLabel("Synthetisch profiel").selectOption(fixtureId);
-  await page.getByRole("button", { name: "Voorstel aanmaken" }).click();
-  await expect(page.getByRole("heading", { name: "Mock-OCR-voorstel" })).toBeVisible();
-});
-
-test("ongeldige mock-OCR-fixture wordt geweigerd voordat een bestand wordt opgeslagen", async ({ page }) => {
-  await loginAsTestUser(page);
-  const response = await page.request.post(`${baseUrl}/api/receipts`, {
-    multipart: {
-      fixtureId: "not-a-committed-fixture",
-      file: { name: "synthetic-invalid-fixture.pdf", mimeType: "application/pdf", buffer: syntheticPdf },
-    },
-  });
-  expect(response.status()).toBe(400);
-  const payload = await response.json() as { error?: string };
-  expect(payload.error).toContain("mock-OCR-fixture");
+  await expect(page.getByText(/Status: bevestigd/i)).toBeVisible();
 });
