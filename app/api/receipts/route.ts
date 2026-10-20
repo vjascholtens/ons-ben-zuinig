@@ -131,6 +131,27 @@ export async function POST(request: NextRequest) {
     return jsonError("Het bestand kon niet veilig worden opgeslagen. Controleer de opslagconfiguratie.", 502);
   }
 
+  const cleanupUploadedObject = async () => {
+    const { error: cleanupError } = await supabase.storage.from(BUCKET).remove([storagePath]);
+    return !cleanupError;
+  };
+
+  // A guarded local-only failure injection lets the integration test exercise
+  // the same cleanup path without adding any database state or public endpoint.
+  if (
+    process.env.NODE_ENV !== "production" &&
+    process.env.OBZ_TEST_INJECT_METADATA_FAILURE === "1" &&
+    request.headers.get("x-obz-test-fail-receipt-metadata") === "1"
+  ) {
+    const cleaned = await cleanupUploadedObject();
+    return jsonError(
+      cleaned
+        ? "Testinjectie: documentmetadata-opslag geweigerd; uploadobject opgeruimd."
+        : "Testinjectie: documentmetadata-opslag geweigerd; opruimen vereist controle.",
+      500,
+    );
+  }
+
   const { data: receipt, error: insertError } = await supabase
     .from("receipts")
     .insert({
@@ -148,9 +169,13 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (insertError || !receipt) {
-    // Best effort cleanup if metadata could not be committed.
-    await supabase.storage.from(BUCKET).remove([storagePath]);
-    return jsonError("Het documentrecord kon niet worden opgeslagen. Het uploadbestand is opgeruimd waar mogelijk.", 500);
+    const cleaned = await cleanupUploadedObject();
+    return jsonError(
+      cleaned
+        ? "Het documentrecord kon niet worden opgeslagen. Het uploadbestand is opgeruimd."
+        : "Het documentrecord kon niet worden opgeslagen en de tijdelijke upload kon niet worden opgeruimd.",
+      500,
+    );
   }
 
   return NextResponse.json(
