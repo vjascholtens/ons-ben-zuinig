@@ -58,7 +58,7 @@ if (missing.length) {
       missing.map((name) => `- ${name}`).join("\n"),
   );
   console.error("Gebruik uitsluitend een apart prototypeproject en synthetische data.");
-  console.error("❌ [CFG-002] EINDSTATUS=NOT_RUN; CHECKS=0; MISLUKT=0; EXITCODE=2");
+  console.error("❌ [CFG-002] Supabase RLS-test niet uitgevoerd; EINDSTATUS=NOT_RUN; CHECKS=0; MISLUKT=0; EXITCODE=2");
   process.exit(2);
 }
 
@@ -526,10 +526,10 @@ async function main() {
 }
 
 main().catch(async (error) => {
-  console.error(
-    "Test-run afgebroken:",
-    error instanceof Error ? error.message : "onbekende fout",
-  );
+  const message = error instanceof Error ? error.message : "onbekende fout";
+  console.error("Test-run afgebroken:", message);
+  failures.push({ name: "Test-run afgebroken", message });
+  results.push({ name: "Test-run afgebroken", ok: false, error: message });
   process.exitCode = 1;
   await tryCleanup();
   printSummary();
