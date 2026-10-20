@@ -15,7 +15,7 @@
  *   for the days paid early; equality is considered worthwhile.
  */
 
-export type DateOnly = `${number}-${number}-${number}`;
+export type DateOnly = string;
 export type DayUnit = "calendar" | "business";
 export type LiberationDayRule = "never" | "always" | "quinquennial";
 
@@ -26,7 +26,7 @@ export type NetherlandsCalendarOptions = {
 };
 
 const DAY_MS = 86_400_000;
-const MONEY_SCALE = 100n;
+const MONEY_SCALE = BigInt(100);
 const PERCENT_SCALE = 10_000n; // percent values with up to four decimal places
 
 function parseDate(date: string): { year: number; month: number; day: number; utc: number } {
@@ -176,15 +176,15 @@ function parseScaledDecimal(value: string, scale: bigint, maxDecimals: number, f
 }
 
 function formatScaled(value: bigint, decimals: number): string {
-  const scale = 10n ** BigInt(decimals);
+  const scale = BigInt(10) ** BigInt(decimals);
   const whole = value / scale;
   const fraction = (value % scale).toString().padStart(decimals, "0");
   return decimals === 0 ? whole.toString() : `${whole}.${fraction}`;
 }
 
 function roundHalfUp(numerator: bigint, denominator: bigint): bigint {
-  if (denominator <= 0n) throw new Error("Denominator must be positive.");
-  return (numerator + denominator / 2n) / denominator;
+  if (denominator <= BigInt(0)) throw new Error("Denominator must be positive.");
+  return (numerator + denominator / BigInt(2)) / denominator;
 }
 
 export function evaluateEarlyPaymentDiscount(input: {
@@ -202,12 +202,12 @@ export function evaluateEarlyPaymentDiscount(input: {
   const amountCents = parseScaledDecimal(input.grossAmount, MONEY_SCALE, 2, "grossAmount");
   const discountRate = parseScaledDecimal(input.discountPercent, PERCENT_SCALE, 4, "discountPercent");
   const financingRate = parseScaledDecimal(input.annualFinancingRatePercent, PERCENT_SCALE, 4, "annualFinancingRatePercent");
-  if (discountRate > 100n * PERCENT_SCALE) throw new Error("discountPercent cannot exceed 100.");
+  if (discountRate > BigInt(100) * PERCENT_SCALE) throw new Error("discountPercent cannot exceed 100.");
   const deadline = parseDate(input.discountDeadline);
   const dueDate = parseDate(input.normalDueDate);
   const daysPaidEarly = Math.max(0, Math.round((dueDate.utc - deadline.utc) / DAY_MS));
-  const savingsCents = roundHalfUp(amountCents * discountRate, PERCENT_SCALE * 100n);
-  const worthwhile = discountRate > 0n && discountRate * 365n >= financingRate * BigInt(daysPaidEarly);
+  const savingsCents = roundHalfUp(amountCents * discountRate, PERCENT_SCALE * BigInt(100));
+  const worthwhile = discountRate > BigInt(0) && discountRate * BigInt(365) >= financingRate * BigInt(daysPaidEarly);
   return {
     savingsAmount: formatScaled(savingsCents, 2),
     daysPaidEarly,
@@ -219,9 +219,9 @@ export function evaluateEarlyPaymentDiscount(input: {
 function ratioInDays(numeratorAmount: string, denominatorAmount: string, periodDays: number, field: string): string {
   const numerator = parseScaledDecimal(numeratorAmount, MONEY_SCALE, 2, `${field} numerator`);
   const denominator = parseScaledDecimal(denominatorAmount, MONEY_SCALE, 2, `${field} denominator`);
-  if (denominator === 0n) throw new Error(`${field} denominator must be greater than zero.`);
+  if (denominator === BigInt(0)) throw new Error(`${field} denominator must be greater than zero.`);
   if (!Number.isSafeInteger(periodDays) || periodDays <= 0) throw new Error("Period days must be a positive safe integer.");
-  return formatScaled(roundHalfUp(numerator * BigInt(periodDays) * 100n, denominator), 2);
+  return formatScaled(roundHalfUp(numerator * BigInt(periodDays) * BigInt(100), denominator), 2);
 }
 
 /** DSO = average receivables / net credit sales in period × period days. */
