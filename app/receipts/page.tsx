@@ -30,7 +30,7 @@ export default async function ReceiptsPage() {
     <main className="mx-auto grid w-full max-w-5xl gap-6 p-4 sm:p-8">
       <div className="flex items-center justify-between gap-4">
         <div><h1 className="text-2xl font-semibold">Documenten</h1><p className="mt-1 text-sm text-neutral-600">Private documenten van jouw administratie.</p></div>
-        <Button variant="outline" asChild={false}><Link href="/">Naar start</Link></Button>
+        <Link href="/" className="inline-flex min-h-9 items-center rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-900 hover:bg-neutral-100">Naar start</Link>
       </div>
       <Card><CardHeader><CardTitle>Opgeslagen bonnen</CardTitle></CardHeader><CardContent><ReceiptsList receipts={receipts ?? []} /></CardContent></Card>
     </main>
