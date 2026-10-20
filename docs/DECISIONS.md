@@ -35,5 +35,23 @@ Belangrijke keuzes worden vastgelegd met status, context, alternatieven en gevol
 - **Status:** Later te beoordelen
 - **Voorstel:** niet in eerste scope opnemen tenzij actuele eisen of concrete behoefte dit noodzakelijk maken.
 
+## D-007 — Financiële dataconventies
+- **Status:** Voorstel ter formele goedkeuring · **Issue:** [#14](https://github.com/vjascholtens/ons-ben-zuinig/issues/14)
+- **Richting:** geen floating-point voor geld; exact decimaal rekenen in TypeScript en PostgreSQL `NUMERIC/DECIMAL` met expliciete precisie.
+- **Vereiste modelvelden:** valuta, btw-code/behandeling, btw-rate, grondslag, btw-bedrag, netto/bruto, factuurstatus, definitiefmakingsmoment, bronstuk, bevestigde OCR-waarden en audit-trail.
+- **Nog te bevestigen:** kolomprecisie, afronding per regel versus totaal, Nederlandse btw-codes, factuurnummering en correctieregels. Financiële schema's blijven geblokkeerd op #14 en de inhoudelijke validatie van #2.
+
+## D-008 — Backend en externe diensten (voorlopige hypotheses)
+- **Status:** Voorlopig, geen productie-go · **Backend:** [#7](https://github.com/vjascholtens/ons-ben-zuinig/issues/7) · **OCR/e-mail:** [#8](https://github.com/vjascholtens/ons-ben-zuinig/issues/8)
+- **Backendrichting:** PostgreSQL, private S3-compatibele objectopslag in een goedgekeurde EU-regio, beheerde authenticatie met server-side autorisatie en beheerde hosting met back-up/herstel.
+- **OCRrichting:** provider-neutrale adapter; Amazon Textract AnalyzeExpense wordt als kandidaat vergeleken, niet als reeds goedgekeurde productieprovider.
+- **Privacy-gate:** geen echte documenten naar OCR of object storage totdat regio, retentie, verwerkersvoorwaarden, toegangsbeveiliging en eventuele AI-opt-out zijn gecontroleerd. AWS beschrijft voorwaarden rond het gebruik van inputs voor serviceverbetering en mogelijke opslag buiten de regio tenzij opt-out is ingesteld: https://aws.amazon.com/textract/faqs/.
+- **E-mailrichting:** transactionele e-mailadapter met verzendstatus en veilige retries; provider nog niet gekozen. Gebruik development-sandbox.
+
+## D-009 — Back-up- en hersteldoelen
+- **Status:** Voorstel ter bevestiging · **Issue:** [#15](https://github.com/vjascholtens/ons-ben-zuinig/issues/15)
+- **Startvoorstel:** RPO ≤ 24 uur en RTO ≤ 1 werkdag voor de kleinschalige MVP.
+- **Productiegate:** de doelen, frequentie, retentie en hersteltest moeten zijn bevestigd en aangetoond vóór productie.
+
 ## Beslisregel
 Geen onomkeerbare technische keuze nemen op basis van een onbevestigde productaanname. Bij kleine, omkeerbare keuzes wint meestal de simpelste onderhoudbare optie.
