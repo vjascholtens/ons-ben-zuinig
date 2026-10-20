@@ -1,0 +1,20 @@
+{
+  "moneyRepresentation": "decimal-string; PostgreSQL NUMERIC(12,2)",
+  "currencyCode": "EUR",
+  "roundingMethod": "per_line",
+  "cases": [
+    { "id": "vat21", "net": "100.00", "vatTreatment": "standard", "vatRate": "21.00", "vat": "21.00", "gross": "121.00" },
+    { "id": "vat9", "net": "100.00", "vatTreatment": "standard", "vatRate": "9.00", "vat": "9.00", "gross": "109.00" },
+    { "id": "vat-round-half-up", "net": "0.50", "vatTreatment": "standard", "vatRate": "21.00", "vat": "0.11", "gross": "0.61" },
+    { "id": "vat-zero-rate", "net": "100.00", "vatTreatment": "zero_rate", "vatRate": "0.00", "vat": "0.00", "reasonRequired": true },
+    { "id": "vat-exempt", "net": "100.00", "vatTreatment": "exempt", "vatRate": null, "vat": "0.00", "reasonRequired": true },
+    { "id": "vat-reverse-charge", "net": "100.00", "vatTreatment": "reverse_charge", "vatRate": null, "vat": "0.00", "reasonRequired": true },
+    { "id": "vat-kor", "net": "100.00", "vatTreatment": "kor", "vatRate": null, "vat": "0.00", "reasonRequired": true }
+  ],
+  "concurrencyAcceptance": {
+    "parallelFinalizeRequests": 20,
+    "uniqueFinalNumbers": 20,
+    "contiguousSequence": true,
+    "method": "test public.finalize_invoice on a dedicated test database with synthetic invoices"
+  }
+}
