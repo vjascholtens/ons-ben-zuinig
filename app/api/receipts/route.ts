@@ -19,7 +19,7 @@ function jsonError(message: string, status: number) {
 
 function safeOriginalFilename(value: string): string {
   const basename = value.split(/[\\/]/).pop() ?? "receipt";
-  const sanitized = basename.replace(/[\\u0000-\\u001f\\u007f]/g, "_").trim();
+  const sanitized = basename.replace(/[\x00-\x1f\x7f]/g, "_").trim();
   return (sanitized || "receipt").slice(0, MAX_FILENAME_LENGTH);
 }
 
