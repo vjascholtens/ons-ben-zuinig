@@ -27,7 +27,7 @@ export type NetherlandsCalendarOptions = {
 
 const DAY_MS = 86_400_000;
 const MONEY_SCALE = 100n;
-const PERCENT_SCALE = 1_000_000n; // percent values with up to four decimal places
+const PERCENT_SCALE = 10_000n; // percent values with up to four decimal places
 
 function parseDate(date: string): { year: number; month: number; day: number; utc: number } {
   if (!/^\d{4}-\d{2}-\d{2}$/u.test(date)) throw new Error(`Invalid ISO date: ${date}`);
@@ -47,7 +47,7 @@ function formatDate(utc: number): DateOnly {
 
 export function addCalendarDays(date: string, days: number): DateOnly {
   const parsed = parseDate(date);
-  assertDayCount(days);
+  if (!Number.isSafeInteger(days)) throw new Error("Day count must be a safe integer.");
   return formatDate(parsed.utc + days * DAY_MS);
 }
 
@@ -91,8 +91,7 @@ export function getNetherlandsPublicHolidays(year: number, options: NetherlandsC
   const kingsDay = `${year}-04-27`;
   holidays.add(new Date(parseDate(kingsDay).utc).getUTCDay() === 0 ? `${year}-04-26` : kingsDay);
 
-  if (options.includeGoodFriday === true) holidays.add(addCalendarDays(easter, -0).slice(0, 0) as DateOnly);
-  // Good Friday is Easter Sunday minus two days; use a positive offset from Friday to Easter.
+  // Good Friday is Easter Sunday minus two days.
   if (options.includeGoodFriday === true) {
     const easterDate = parseDate(easter);
     holidays.add(formatDate(easterDate.utc - 2 * DAY_MS));
