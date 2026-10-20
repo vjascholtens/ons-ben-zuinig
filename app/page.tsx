@@ -1,4 +1,19 @@
+import Link from "next/link";
 import { ReceiptPicker } from "@/components/receipt-picker";
+import { ReceiptList } from "@/components/receipt-list";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { createClient } from "@/lib/supabase/server";
+
+export const dynamic = "force-dynamic";
+
+type ReceiptSummary = {
+  id: string;
+  original_filename: string;
+  content_type: string;
+  byte_size: number;
+  status: string;
+  created_at: string;
+};
 
 function ReceiptIcon() {
   return (
@@ -12,7 +27,49 @@ function ReceiptIcon() {
   );
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const configured = isSupabaseConfigured();
+  let authenticated = false;
+  let storageReady = false;
+  let receipts: ReceiptSummary[] = [];
+  let setupMessage: string | null = null;
+
+  if (configured) {
+    const supabase = await createClient();
+    const { data: claimData, error: claimError } = await supabase.auth.getClaims();
+    const userId = claimData?.claims?.sub;
+
+    if (!claimError && typeof userId === "string") {
+      authenticated = true;
+      const { data: entity, error: entityError } = await supabase
+        .from("accounting_entities")
+        .select("id")
+        .eq("owner_user_id", userId)
+        .maybeSingle();
+
+      if (entityError) {
+        setupMessage = "De opslagdatabase is nog niet klaar. Pas eerst de Supabase-migratie toe en controleer de RLS policies.";
+      } else {
+        storageReady = true;
+        if (entity) {
+          const { data, error } = await supabase
+            .from("receipts")
+            .select("id, original_filename, content_type, byte_size, status, created_at")
+            .eq("entity_id", entity.id)
+            .order("created_at", { ascending: false })
+            .limit(30);
+
+          if (error) {
+            storageReady = false;
+            setupMessage = "De documentenlijst is niet beschikbaar. Controleer de migratie en toegangsregels.";
+          } else {
+            receipts = (data ?? []) as ReceiptSummary[];
+          }
+        }
+      }
+    }
+  }
+
   return (
     <main className="app-shell">
       <header className="topbar">
@@ -20,7 +77,17 @@ export default function HomePage() {
           <span className="brand-mark"><ReceiptIcon /></span>
           <span>Ons Ben Zuinig</span>
         </div>
-        <span className="topbar-note">Een helder overzicht, stap voor stap</span>
+        <div className="topbar-actions">
+          {authenticated ? (
+            <form action="/auth/signout" method="post">
+              <button className="text-button" type="submit">Uitloggen</button>
+            </form>
+          ) : configured ? (
+            <Link className="text-button" href="/login">Inloggen</Link>
+          ) : (
+            <span className="topbar-note">Een helder overzicht, stap voor stap</span>
+          )}
+        </div>
       </header>
 
       <section className="hero" aria-labelledby="hero-title">
@@ -32,8 +99,15 @@ export default function HomePage() {
             administratie die je kunt vertrouwen.
           </p>
         </div>
-        <div className="status-pill"><span className="status-dot" />Eerste prototype</div>
+        <div className="status-pill">
+          <span className="status-dot" />
+          {authenticated ? "Beveiligde testopslag" : configured ? "Inloggen vereist" : "Lokale demo"}
+        </div>
       </section>
+
+      {setupMessage ? (
+        <div className="error-message page-alert" role="alert">{setupMessage}</div>
+      ) : null}
 
       <div className="dashboard">
         <section className="card" aria-labelledby="receipts-title">
@@ -44,15 +118,43 @@ export default function HomePage() {
             </div>
             <span className="icon-badge"><ReceiptIcon /></span>
           </div>
-          <ReceiptPicker />
-          <div className="demo-warning" role="note">
-            <span aria-hidden="true">ⓘ</span>
-            <div>
-              <strong>Demo, nog geen veilige opslag</strong>
-              Er wordt nog niets geüpload of opgeslagen. Uploaden, opslaan en OCR
-              sluiten we pas aan na de opslag- en privacykeuzes.
+
+          {!configured ? (
+            <>
+              <ReceiptPicker mode="demo" />
+              <div className="demo-warning" role="note">
+                <span aria-hidden="true">ⓘ</span>
+                <div>
+                  <strong>Lokale demo — geen opslag</strong>
+                  Deze versie kan lokaal een bestand selecteren, maar uploadt niets.
+                  Stel eerst Supabase in en rond de privacy-/securitycontrole af.
+                </div>
+              </div>
+            </>
+          ) : authenticated && storageReady ? (
+            <>
+              <ReceiptPicker mode="authenticated" />
+              <div className="demo-warning" role="note">
+                <span aria-hidden="true">ⓘ</span>
+                <div>
+                  <strong>Prototype met testgegevens</strong>
+                  Alleen gebruiken met synthetische testbestanden totdat regio,
+                  verwerkersvoorwaarden, opslagbeleid en toegangstests zijn goedgekeurd.
+                  OCR is nog niet aangesloten.
+                </div>
+              </div>
+            </>
+          ) : authenticated ? (
+            <div className="demo-warning">
+              De opslagdatabase is niet gereed. Upload is uitgeschakeld totdat de migratie en policies zijn gecontroleerd.
             </div>
-          </div>
+          ) : (
+            <div className="login-prompt">
+              <p>Log in met je bestaande account om een bon op te slaan.</p>
+              <Link className="upload-action" href="/login">Inloggen</Link>
+              <p className="file-note">Nieuwe accounts worden niet vanuit deze app aangemaakt.</p>
+            </div>
+          )}
         </section>
 
         <section className="card" aria-labelledby="overview-title">
@@ -70,6 +172,19 @@ export default function HomePage() {
           </div>
         </section>
       </div>
+
+      {authenticated && storageReady ? (
+        <section className="card saved-documents" aria-labelledby="saved-title">
+          <div className="card-heading">
+            <div>
+              <h2 id="saved-title">Opgeslagen documenten</h2>
+              <p className="card-subtitle">Private documenten die bij jouw administratie horen.</p>
+            </div>
+            <span className="document-count">{receipts.length}</span>
+          </div>
+          <ReceiptList receipts={receipts} />
+        </section>
+      ) : null}
 
       <section className="next-steps" aria-label="Komende onderdelen">
         <article className="mini-card">
