@@ -58,6 +58,7 @@ if (missing.length) {
       missing.map((name) => `- ${name}`).join("\n"),
   );
   console.error("Gebruik uitsluitend een apart prototypeproject en synthetische data.");
+  console.error("❌ [CFG-002] EINDSTATUS=NOT_RUN; CHECKS=0; MISLUKT=0; EXITCODE=2");
   process.exit(2);
 }
 
@@ -81,6 +82,22 @@ const PDF_BYTES = Buffer.from(
 );
 const RUN_TAG = `obz-rls-test-${Date.now()}-${randomUUID().slice(0, 8)}`;
 
+function errorCode(name) {
+  return `RLS-${createHash("sha256").update(name).digest("hex").slice(0, 6).toUpperCase()}`;
+}
+
+function printSummary() {
+  console.log("\\n=== OBZ LIVE RLS-SAMENVATTING (kopieer dit blok) ===");
+  if (results.length === 0) {
+    console.log("❌ [CFG-002] Geen checks uitgevoerd; controleer configuratie en startvoorwaarden.");
+  }
+  for (const result of results) {
+    const code = result.ok ? "OK-000" : errorCode(result.name);
+    console.log(`${result.ok ? "✅" : "❌"} [${code}] ${result.name}${result.error ? ` — ${result.error}` : ""}`);
+  }
+  console.log(`EINDSTATUS=${failures.length ? "FAIL" : "PASS"}; CHECKS=${results.length}; MISLUKT=${failures.length}; EXITCODE=${failures.length ? 1 : 0}`);
+}
+
 async function check(name, fn) {
   try {
     const detail = await fn();
@@ -93,7 +110,7 @@ async function check(name, fn) {
       error instanceof Error ? error.message.slice(0, 180) : "onbekende fout";
     failures.push({ name, message });
     results.push({ name, ok: false, error: message });
-    console.error(`FAIL  ${name}: ${message}`);
+    console.error(`FAIL  [${errorCode(name)}] ${name}: ${message}`);
     return undefined;
   }
 }
@@ -504,11 +521,7 @@ async function main() {
 
   console.log("\nTestresultaat");
   console.table(results);
-  console.log(
-    failures.length
-      ? `❌ ${failures.length} van ${results.length} controles mislukt.`
-      : `✅ Alle ${results.length} geautomatiseerde controles geslaagd.`,
-  );
+  printSummary();
   if (failures.length) process.exitCode = 1;
 }
 
@@ -519,4 +532,5 @@ main().catch(async (error) => {
   );
   process.exitCode = 1;
   await tryCleanup();
+  printSummary();
 });
