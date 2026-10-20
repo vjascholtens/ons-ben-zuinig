@@ -41,12 +41,13 @@ Belangrijke keuzes worden vastgelegd met status, context, alternatieven en gevol
 - **Vereiste modelvelden:** valuta, btw-code/behandeling, btw-rate, grondslag, btw-bedrag, netto/bruto, factuurstatus, definitiefmakingsmoment, bronstuk, bevestigde OCR-waarden en audit-trail.
 - **Nog te bevestigen:** kolomprecisie, afronding per regel versus totaal, Nederlandse btw-codes, factuurnummering en correctieregels. Financiële schema's blijven geblokkeerd op #14 en de inhoudelijke validatie van #2.
 
-## D-008 — Backend en externe diensten (voorlopige hypotheses)
-- **Status:** Voorlopig, geen productie-go · **Backend:** [#7](https://github.com/vjascholtens/ons-ben-zuinig/issues/7) · **OCR/e-mail:** [#8](https://github.com/vjascholtens/ons-ben-zuinig/issues/8)
-- **Backendrichting:** PostgreSQL, private S3-compatibele objectopslag in een goedgekeurde EU-regio, beheerde authenticatie met server-side autorisatie en beheerde hosting met back-up/herstel.
-- **OCRrichting:** provider-neutrale adapter; Amazon Textract AnalyzeExpense wordt als kandidaat vergeleken, niet als reeds goedgekeurde productieprovider.
-- **Privacy-gate:** geen echte documenten naar OCR of object storage totdat regio, retentie, verwerkersvoorwaarden, toegangsbeveiliging en eventuele AI-opt-out zijn gecontroleerd. AWS beschrijft voorwaarden rond het gebruik van inputs voor serviceverbetering en mogelijke opslag buiten de regio tenzij opt-out is ingesteld: https://aws.amazon.com/textract/faqs/.
-- **E-mailrichting:** transactionele e-mailadapter met verzendstatus en veilige retries; provider nog niet gekozen. Gebruik development-sandbox.
+## D-008 — Backend en externe diensten (prototyperichting)
+- **Status:** Voorlopig besloten voor prototype, geen productie-go · **Backend:** [#7](https://github.com/vjascholtens/ons-ben-zuinig/issues/7) · **OCR/e-mail:** [#8](https://github.com/vjascholtens/ons-ben-zuinig/issues/8)
+- **Backendrichting:** Supabase PostgreSQL + Auth + private Storage, projectregio Frankfurt (`eu-central-1`). De applicatie gebruikt SSR-cookies en geverifieerde claims; opslag- en tabeltoegang worden beperkt door RLS. Geen service-role key in de browser.
+- **Beperking:** regioselectie is een data-location control, geen zelfstandige GDPR-garantie. Supabase documenteert account-/support-/telemetrieverwerking buiten de projectregio en mogelijke wereldwijde CDN-serving van Storage: https://supabase.com/guides/platform/regions en https://supabase.com/legal/privacy-resources/data-residency-and-transfers-faq.
+- **OCRrichting:** provider-neutrale adapter en mock in development. Azure AI Document Intelligence is de eerste kandidaat om op privacy/retentie te beoordelen; de huidige documentatie zegt dat analysis inputs/results tijdelijk in dezelfde Azure-regio worden bewaard en 24 uur na afronding worden verwijderd: https://learn.microsoft.com/azure/ai-services/document-intelligence/data-privacy-security. Amazon Textract is alternatief, maar vereist specifieke toetsing van AI-services opt-out en regionale verwerking: https://aws.amazon.com/textract/faqs/.
+- **E-mailrichting:** transactionele e-mailadapter met verzendstatus, idempotentie en veilige retries; provider nog niet gekozen.
+- **Privacy-gate:** geen echte bonnetjes/facturen naar storage of OCR totdat DPA/subprocessors, dataflows, regio, retentie/verwijdering, support/logging/CDN, RLS en back-up/herstel zijn beoordeeld. Prototype uitsluitend met synthetische documenten.
 
 ## D-009 — Back-up- en hersteldoelen
 - **Status:** Voorstel ter bevestiging · **Issue:** [#15](https://github.com/vjascholtens/ons-ben-zuinig/issues/15)

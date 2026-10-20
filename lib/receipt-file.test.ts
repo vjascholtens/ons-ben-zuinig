@@ -15,7 +15,11 @@ describe("getReceiptFileError", () => {
   });
 
   it("rejects unsupported file types", () => {
-    expect(getReceiptFileError({ name: "script.js", type: "text/javascript", size: 512 })).toContain("afbeelding of PDF");
+    expect(getReceiptFileError({ name: "script.js", type: "text/javascript", size: 512 })).toContain("PDF of ondersteunde foto");
+  });
+
+  it("rejects SVGs even when the browser reports them as images", () => {
+    expect(getReceiptFileError({ name: "logo.svg", type: "image/svg+xml", size: 512 })).toContain("niet ondersteund");
   });
 
   it("rejects empty files", () => {

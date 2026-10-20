@@ -62,7 +62,14 @@ Next.js biedt een officiële App Router en actuele documentatie voor TypeScript,
 ## Financiële dataconventies vóór het model
 Voor het scaffolden mag de app-shell bestaan zonder financieel schema. Gebruik voor financiële waarden nooit JS floating point of SQL `REAL/DOUBLE PRECISION`; kies exact decimaal rekenen en PostgreSQL `NUMERIC/DECIMAL` met expliciete precisie. Btw-behandeling/percentages, grondslag, btw-bedrag, valuta, afrondingsgrenzen, factuurnummering en audit-trail-velden zijn beschreven in [FINANCIAL_DATA_CONVENTIONS.md](FINANCIAL_DATA_CONVENTIONS.md) en worden goedgekeurd via [Issue #14](https://github.com/vjascholtens/ons-ben-zuinig/issues/14), met fiscale validatie uit [Issue #2](https://github.com/vjascholtens/ons-ben-zuinig/issues/2). Geen financieel schema of boekingslogica vóór die voorwaarden zijn afgerond.
 
-## Voorlopige backendhypothese (nog geen productie-go)
-De gewenste richting voor bespreking in #7 is PostgreSQL, private S3-compatibele objectopslag in een goedgekeurde EU-regio, beheerde authenticatie met server-side autorisatie, en een beheerde hostingomgeving met back-ups/herstel. De definitieve provider en voorwaarden moeten worden beoordeeld voordat echte documenten mogen worden opgeslagen.
+## Voorlopige backendkeuze voor het prototype (geen productie-go)
+Voor de eerstvolgende documentworkflow gebruiken we Supabase als prototype-integratie: PostgreSQL, Auth en private Storage in een expliciet gekozen Frankfurt-project (`eu-central-1`). De bijbehorende RLS-migratie staat in `supabase/migrations/202610200001_receipt_storage.sql`.
 
-Voor #8 houden we OCR provider-neutraal. Amazon Textract AnalyzeExpense mag als kandidaat worden onderzocht, maar niet als standaard productieprovider worden aangenomen voordat de actuele regio-, contract-, retentie- en AI-opt-out-instellingen zijn gecontroleerd. Ontwikkeling gebruikt synthetische documenten en een mock-adapter totdat die beslissing is gemaakt. De AWS FAQ vermeldt voorwaarden rond gebruik van inputs voor serviceverbetering en mogelijke opslag buiten de gekozen regio tenzij opt-out is ingesteld: https://aws.amazon.com/textract/faqs/.
+Dit is nadrukkelijk geen privacy- of GDPR-compliancegarantie. Supabase zegt dat primaire database/auth/storage en backups in de gekozen projectregio staan, maar beschrijft ook bepaalde account-, support- en telemetrieverwerking buiten die regio en mogelijke mondiale CDN-serving van Storage. Beoordeel DPA, subprocessors, logs/support, CDN/cache, retentie en toegangsregels vóór echte data:
+- https://supabase.com/guides/platform/regions
+- https://supabase.com/legal/privacy-resources/data-residency-and-transfers-faq
+
+## OCR- en e-mailgrens
+Upload slaat het origineel alleen op in private storage en maakt een metadatarecord. Er gaat geen documentinhoud naar OCR in #17. Voor OCR houden we een provider-neutrale adapter/mock aan. Azure AI Document Intelligence is de eerste kandidaat voor privacy- en retentiebeoordeling omdat de huidige docs 24 uur tijdelijke input/result-opslag in dezelfde regio beschrijven; dit moet nog contractueel worden gevalideerd: https://learn.microsoft.com/azure/ai-services/document-intelligence/data-privacy-security. Amazon Textract blijft alternatief; AWS documenteert dat opt-out voor AI-services nodig kan zijn om gebruik voor serviceverbetering en mogelijk opslag buiten de regio te voorkomen: https://aws.amazon.com/textract/faqs/.
+
+De e-mailprovider is nog open. Ontwikkeling gebruikt synthetische bestanden en verstuurt geen echte facturen.

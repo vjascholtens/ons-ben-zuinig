@@ -2,9 +2,22 @@ export const MAX_RECEIPT_FILE_BYTES = 15 * 1024 * 1024;
 
 export type ReceiptFileLike = Pick<File, "name" | "size" | "type">;
 
+const ALLOWED_EXTENSIONS = new Set([
+  ".pdf", ".jpg", ".jpeg", ".png", ".webp", ".avif", ".heic", ".heif",
+]);
+const ALLOWED_MIMES = new Set([
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/avif",
+  "image/heic",
+  "image/heif",
+]);
+
 /**
- * Client-side usability check only. Any future upload endpoint must repeat
- * type/size validation server-side and inspect actual file contents.
+ * Client-side usability check only. The API repeats validation using binary
+ * file signatures and storage policies. This function is not an auth control.
  */
 export function getReceiptFileError(file: ReceiptFileLike): string | null {
   if (file.size <= 0) return "Dit bestand lijkt leeg. Kies een andere foto of PDF.";
@@ -13,16 +26,11 @@ export function getReceiptFileError(file: ReceiptFileLike): string | null {
   }
 
   const extension = file.name.toLowerCase().match(/\.[^.]+$/)?.[0] ?? "";
-  const imageExtensions = [".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif", ".avif"];
-  const allowedExtensions = new Set([".pdf", ...imageExtensions]);
-  const looksLikeImage = file.type.startsWith("image/") || imageExtensions.includes(extension);
-  const looksLikePdf = file.type === "application/pdf" || extension === ".pdf";
+  const supportedByName = ALLOWED_EXTENSIONS.has(extension);
+  const supportedByMime = ALLOWED_MIMES.has(file.type);
 
-  if (!looksLikeImage && !looksLikePdf) {
-    return "Kies een afbeelding of PDF. Andere bestandstypen worden niet ondersteund.";
-  }
-  if (extension && !allowedExtensions.has(extension) && !file.type.startsWith("image/") && file.type !== "application/pdf") {
-    return "Dit bestandstype wordt niet ondersteund.";
+  if (!supportedByName && !supportedByMime) {
+    return "Kies een geldige PDF of ondersteunde foto. Andere bestandstypen worden niet ondersteund.";
   }
   return null;
 }
