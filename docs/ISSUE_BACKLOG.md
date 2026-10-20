@@ -180,3 +180,26 @@ Leg de beoogde factuurvelden, btw-situaties, nummering, correcties, bewaarplicht
 **Prioriteit:** P3 / later
 
 **Acceptatiecriteria:** toepasselijke verplichtingen en gewenste scenario's zijn actueel onderzocht; scopebesluit en impact op factuurmodel zijn vastgelegd.
+
+
+## GitHub Issue-index
+
+De echte uitvoerbare backlog en afhankelijkheden staan in GitHub. Deze links zijn de huidige ankerpunten:
+
+### Fundament
+- [#1 MVP-scope en gebruikersmodel](https://github.com/vjascholtens/ons-ben-zuinig/issues/1)
+- [#2 Nederlandse boekhoud- en btw-eisen valideren](https://github.com/vjascholtens/ons-ben-zuinig/issues/2)
+- [#3 Frontend/app-stack](https://github.com/vjascholtens/ons-ben-zuinig/issues/3)
+- [#4 GitHub Project, labels en branch protection](https://github.com/vjascholtens/ons-ben-zuinig/issues/4)
+- [#5 Echte applicatie-CI — Depends on #1, #3](https://github.com/vjascholtens/ons-ben-zuinig/issues/5)
+- [#7 Backendfundament: database, auth, opslag en hosting](https://github.com/vjascholtens/ons-ben-zuinig/issues/7)
+- [#8 OCR- en e-maildiensten](https://github.com/vjascholtens/ons-ben-zuinig/issues/8)
+- [#6 Mobiele bon-uploadflow — geblokkeerd door #1 en #3](https://github.com/vjascholtens/ons-ben-zuinig/issues/6)
+
+### Functionele Epics
+- [#9 Bon-categorieën, uitgaven en boekingen](https://github.com/vjascholtens/ons-ben-zuinig/issues/9)
+- [#10 Verkoopfacturen en factuurstatussen](https://github.com/vjascholtens/ons-ben-zuinig/issues/10)
+- [#11 E-mailverzending en maandelijkse totaalmail](https://github.com/vjascholtens/ons-ben-zuinig/issues/11)
+- [#12 Back-ups, herstel en boekhoudexport](https://github.com/vjascholtens/ons-ben-zuinig/issues/12)
+
+Labels worden gedefinieerd in `.github/labels.json` en aangemaakt/toegewezen door de gerichte workflow `Sync labels`. De echte app-CI volgt pas na de stackkeuze.
