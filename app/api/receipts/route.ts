@@ -136,22 +136,6 @@ export async function POST(request: NextRequest) {
     return !cleanupError;
   };
 
-  // A guarded local-only failure injection lets the integration test exercise
-  // the same cleanup path without adding any database state or public endpoint.
-  if (
-    process.env.NODE_ENV !== "production" &&
-    process.env.OBZ_TEST_INJECT_METADATA_FAILURE === "1" &&
-    request.headers.get("x-obz-test-fail-receipt-metadata") === "1"
-  ) {
-    const cleaned = await cleanupUploadedObject();
-    return jsonError(
-      cleaned
-        ? "Testinjectie: documentmetadata-opslag geweigerd; uploadobject opgeruimd."
-        : "Testinjectie: documentmetadata-opslag geweigerd; opruimen vereist controle.",
-      500,
-    );
-  }
-
   const { data: receipt, error: insertError } = await supabase
     .from("receipts")
     .insert({
