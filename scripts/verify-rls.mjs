@@ -420,13 +420,15 @@ async function main() {
       postReceipt(userC, syntheticFile(PDF_BYTES, `${RUN_TAG}-c1.pdf`, "application/pdf")),
       postReceipt(userC, syntheticFile(PDF_BYTES, `${RUN_TAG}-c2.pdf`, "application/pdf")),
     ]);
+    for (const { response, body } of uploads) {
+      if (response.status === 201 && body.receipt?.id) createdReceiptIds.add(body.receipt.id);
+    }
     const failedUpload = uploads.find(({ response, body }) => response.status !== 201 || !body.receipt?.id);
     if (failedUpload) {
       throw new Error(`parallelle upload gaf HTTP ${failedUpload.response.status}`);
     }
 
     concurrentReceipts = uploads.map(({ body }) => body.receipt);
-    for (const receipt of concurrentReceipts) createdReceiptIds.add(receipt.id);
 
     const uniqueIds = new Set(concurrentReceipts.map((receipt) => receipt.id));
     if (uniqueIds.size !== 2) throw new Error("document-ID's zijn niet uniek");
@@ -458,17 +460,16 @@ async function main() {
       concurrentReceipts.every((receipt) => body.receipts?.some((row) => row.id === receipt.id));
   });
 
-  const adminBucket = await adminClient.schema("storage").from("buckets")
-    .select("id, public, file_size_limit, allowed_mime_types")
-    .eq("id", "receipts")
-    .maybeSingle();
+  const buckets = await adminClient.storage.listBuckets();
   await check("Storage-bucket receipts is aantoonbaar private met limiet en MIME-allowlist", async () => {
-    if (adminBucket.error || !adminBucket.data) throw new Error("bucketconfiguratie kon niet worden gelezen");
-    if (adminBucket.data.public !== false) throw new Error("receipts-bucket is publiek");
-    if (adminBucket.data.file_size_limit !== 15 * 1024 * 1024) throw new Error("bucketlimiet wijkt af van 15 MiB");
-    return Array.isArray(adminBucket.data.allowed_mime_types) &&
-      adminBucket.data.allowed_mime_types.includes("application/pdf") &&
-      adminBucket.data.allowed_mime_types.includes("image/jpeg");
+    if (buckets.error || !buckets.data) throw new Error("bucketconfiguratie kon niet worden gelezen");
+    const bucket = buckets.data.find((item) => item.id === "receipts");
+    if (!bucket) throw new Error("receipts-bucket ontbreekt");
+    if (bucket.public !== false) throw new Error("receipts-bucket is publiek");
+    if (bucket.file_size_limit !== 15 * 1024 * 1024) throw new Error("bucketlimiet wijkt af van 15 MiB");
+    return Array.isArray(bucket.allowed_mime_types) &&
+      bucket.allowed_mime_types.includes("application/pdf") &&
+      bucket.allowed_mime_types.includes("image/jpeg");
   });
 
   await tryCleanup();
