@@ -1,5 +1,4 @@
 "use client";
-
 import { useActionState, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -10,12 +9,10 @@ import { saveReceiptReview, type ReviewActionState } from "./actions";
 
 export type ReviewDraft = { supplier?: string; documentDate?: string; invoiceNumber?: string; netAmount?: string; vatAmount?: string; grossAmount?: string; vatTreatment?: string };
 const initialState: ReviewActionState = { ok: false, message: "" };
-
 export function ReceiptReviewForm({ receiptId, proposal }: { receiptId: string; proposal: ReviewDraft | null }) {
   const [state, formAction, pending] = useActionState(saveReceiptReview, initialState);
   const [rejectOpen, setRejectOpen] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
-  const rejectRef = useRef<HTMLButtonElement>(null);
+  const formRef = useRef<HTMLFormElement>(null), rejectRef = useRef<HTMLButtonElement>(null);
   useEffect(() => { if (state.message) state.ok ? toast.success(state.message) : toast.error(state.message); }, [state]);
   if (!proposal) return <p className="text-sm text-neutral-600">Er is nog geen mock-OCR-voorstel voor dit document.</p>;
   return <>
