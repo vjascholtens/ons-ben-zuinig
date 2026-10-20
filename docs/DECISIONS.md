@@ -56,3 +56,13 @@ Belangrijke keuzes worden vastgelegd met status, context, alternatieven en gevol
 
 ## Beslisregel
 Geen onomkeerbare technische keuze nemen op basis van een onbevestigde productaanname. Bij kleine, omkeerbare keuzes wint meestal de simpelste onderhoudbare optie.
+
+
+## D-010 — Cash-optimizer-rekenconventies (voorlopig)
+- **Status:** Voorlopig voor pure logica · **Issue:** [#32](https://github.com/vjascholtens/ons-ben-zuinig/issues/32) · **Implementatievoorstel:** [PR #33](https://github.com/vjascholtens/ons-ben-zuinig/pull/33)
+- **Datumrepresentatie:** date-only ISO `YYYY-MM-DD`; geen impliciete UTC-tijdstippen of lokale klokconversies. Termijnberekeningen noemen expliciet kalenderdagen of werkdagen.
+- **Werkdagen:** zaterdag/zondag en Nederlandse feestdagen worden overgeslagen. Goede Vrijdag is configureerbaar en staat standaard niet als vrije werkdag aan, omdat dit per arbeidsovereenkomst/organisatie kan verschillen. 5 mei is configureerbaar als nooit/altijd/elke vijf jaar. Organisaties kunnen aanvullende sluitingsdagen opgeven.
+- **Betaaladvies:** standaard veiligheidsmarge is nul; aanbevolen datum = vervaldatum. Een marge trekt expliciet kalender- of werkdagen af. Het is een advies; er wordt nooit automatisch betaald.
+- **Kortingsadvies:** geldinvoer als decimale strings, bedragen intern als integer centen en percentages met `BigInt`; korting wordt half-up op centen afgerond. Korting loont als de positieve kortingsvoet ten minste de financieringskosten over het aantal dagen vervroeging dekt.
+- **DSO/DPO:** DSO = gemiddelde debiteuren / netto kredietomzet × periode in dagen. DPO = gemiddelde crediteuren / inkopen op krediet × periode in dagen. De aanroeper moet bronbedragen en periode expliciet aanleveren; de module raadt geen ontbrekende boekhouddata.
+- **Nog te valideren:** deze conventies zijn geen definitief boekhoudkundig/fiscaal besluit. Bevestig kalender, 5-mei-regel, korting/afronding en DSO/DPO-definities via #14 en #2 voordat ze worden geïntegreerd in UI, rapportages of definitieve financiële verwerking.
