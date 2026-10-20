@@ -1,4 +1,4 @@
-name: Sync labels
+name: Sync labels and milestones
 
 on:
   push:
@@ -13,12 +13,12 @@ permissions:
   issues: write
 
 concurrency:
-  group: sync-repository-labels
+  group: sync-repository-planning-metadata
   cancel-in-progress: false
 
 jobs:
-  sync-labels:
-    name: Create labels and tag initial backlog
+  sync-planning-metadata:
+    name: Create labels, milestones and tag backlog
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -37,21 +37,41 @@ jobs:
             gh label create "$name" --color "$color" --description "$description" --force
           done < <(jq -c '.[]' .github/labels.json)
 
-      - name: Apply labels to initial issues
+      - name: Create milestones if missing
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
-          gh issue edit 1 --add-label "P0,decision"
-          gh issue edit 2 --add-label "P0,decision"
-          gh issue edit 3 --add-label "P0,decision,epic:platform"
-          gh issue edit 4 --add-label "P0,chore,epic:platform"
-          gh issue edit 5 --add-label "P0,chore,epic:platform"
-          gh issue edit 6 --add-label "P1,feature,epic:receipts"
-          gh issue edit 7 --add-label "P0,decision,epic:platform"
-          gh issue edit 8 --add-label "P0,decision,epic:email"
-          gh issue edit 9 --add-label "P1,feature,epic,epic:accounting"
-          gh issue edit 10 --add-label "P1,feature,epic,epic:invoicing"
-          gh issue edit 11 --add-label "P1,feature,epic,epic:email"
-          gh issue edit 12 --add-label "P1,chore,epic,epic:ops"
+          while IFS='|' read -r title description; do
+            if gh api "repos/$GH_REPO/milestones?state=all&per_page=100" --paginate --jq '.[].title' | grep -Fxq "$title"; then
+              echo "Milestone already exists: $title"
+            else
+              gh api --method POST "repos/$GH_REPO/milestones" -f title="$title" -f description="$description"
+            fi
+          done <<'MILESTONES'
+          Foundation|MVP-scope, architectuurbesluiten, repository-inrichting en CI-fundament.
+          MVP - Bonnetjes|Mobiele upload, OCR-controle en veilig terugvinden van bewijsstukken.
+          MVP - Boekhouding|Categorieën, uitgaven, boekingen en gevalideerde financiële berekeningen.
+          MVP - Facturen en e-mail|Verkoopfacturen, statussen, e-mailverzending en maandelijkse totaalmail.
+          Productie en betrouwbaarheid|Back-ups, herstel, exports, security en productiebeheer.
+          MILESTONES
+
+      - name: Apply labels and milestones to initial issues
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh issue edit 1 --add-label "P0,decision" --milestone "Foundation"
+          gh issue edit 2 --add-label "P0,decision" --milestone "Foundation"
+          gh issue edit 3 --add-label "P0,decision,epic:platform" --milestone "Foundation"
+          gh issue edit 4 --add-label "P0,chore,epic:platform" --milestone "Foundation"
+          gh issue edit 5 --add-label "P0,chore,epic:platform" --milestone "Foundation"
+          gh issue edit 6 --add-label "P1,feature,epic:receipts" --milestone "MVP - Bonnetjes"
+          gh issue edit 7 --add-label "P0,decision,epic:platform" --milestone "Foundation"
+          gh issue edit 8 --add-label "P0,decision,epic:email" --milestone "Foundation"
+          gh issue edit 9 --add-label "P1,feature,epic,epic:accounting" --milestone "MVP - Boekhouding"
+          gh issue edit 10 --add-label "P1,feature,epic,epic:invoicing" --milestone "MVP - Facturen en e-mail"
+          gh issue edit 11 --add-label "P1,feature,epic,epic:email" --milestone "MVP - Facturen en e-mail"
+          gh issue edit 12 --add-label "P1,chore,epic,epic:ops" --milestone "Productie en betrouwbaarheid"
