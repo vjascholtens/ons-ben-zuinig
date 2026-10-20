@@ -35,15 +35,13 @@ function loadLocalEnv() {
 loadLocalEnv();
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const publishableKey =
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const baseUrl = (process.env.OBZ_TEST_BASE_URL ?? "http://localhost:3000").replace(/\/$/u, "");
 
 const requiredEnv = [
   ["NEXT_PUBLIC_SUPABASE_URL", supabaseUrl],
-  ["NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (or NEXT_PUBLIC_SUPABASE_ANON_KEY)", publishableKey],
+  ["NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", publishableKey],
   ["SUPABASE_SERVICE_ROLE_KEY (local test cleanup only)", serviceRoleKey],
   ["OBZ_TEST_USER_A_EMAIL", process.env.OBZ_TEST_USER_A_EMAIL],
   ["OBZ_TEST_USER_A_PASSWORD", process.env.OBZ_TEST_USER_A_PASSWORD],
@@ -222,14 +220,15 @@ async function tryCleanup() {
 
   if (selectError) {
     console.warn("WAARSCHUWING: testmetadata kon niet worden opgehaald voor opruiming.");
-    return;
+    return false;
   }
 
   const paths = (rows ?? []).map((row) => row.storage_path);
   if (paths.length) {
     const { error: removeError } = await adminClient.storage.from("receipts").remove(paths);
     if (removeError) {
-      console.warn("WAARSCHUWING: een of meer synthetische testbestanden konden niet worden opgeruimd.");
+      console.warn("WAARSCHUWING: een of meer synthetische testbestanden konden niet worden opgeruimd; metadata blijft behouden voor herstel.");
+      return false;
     }
   }
 
@@ -239,9 +238,11 @@ async function tryCleanup() {
     .in("id", ids);
   if (deleteError) {
     console.warn("WAARSCHUWING: testmetadata kon niet volledig worden opgeruimd.");
-  } else {
-    console.log(`Opruiming: ${ids.length} aangemaakte testrecord(s) verwerkt.`);
+    return false;
   }
+
+  console.log(`Opruiming: ${ids.length} aangemaakte testrecord(s) verwerkt.`);
+  return true;
 }
 
 async function main() {
