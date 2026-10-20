@@ -10,13 +10,18 @@
 Maak één GitHub Project met deze kolommen/statussen:
 `Backlog → Ready → In progress → In review → Done`
 
-Aanbevolen velden: Priority (`P0`–`P3`), Area, Size (`XS/S/M/L`) en Release/Milestone. Gebruik `L` als signaal om een Issue eerst kleiner te knippen.
+Aanbevolen velden: Priority (`P0`–`P2`), Area, Size (`XS/S/M/L`) en Release/Milestone. Gebruik `L` als signaal om een Issue eerst kleiner te knippen.
 
 ## Labels
-- Type: `type:feature`, `type:bug`, `type:chore`, `type:security`, `type:decision`
-- Area: `area:receipts`, `area:accounting`, `area:invoicing`, `area:email`, `area:reports`, `area:platform`
-- Priority: `priority:P0`, `priority:P1`, `priority:P2`, `priority:P3`
-- Status aanvullend: `blocked`, `needs-review`, `good first issue`
+De labelset staat als bronbestand in `.github/labels.json`. De workflow `Sync labels` maakt labels aan of werkt ze bij en labelt de eerste Issues. De workflow heeft `issues: write` alleen op deze gerichte label-sync workflow en draait wanneer het labelmanifest of de workflow verandert; je kunt hem ook handmatig starten.
+
+- Prioriteit: `P0`, `P1`, `P2`
+- Type: `decision`, `chore`, `feature`, `bug`, `security`, `docs`
+- Overkoepelend: `epic`, `epic:accounting`, `epic:invoicing`, `epic:email`, `epic:ops`, `epic:receipts`, `epic:platform`
+- Status: `blocked`
+
+## Afhankelijkheden
+Zet afhankelijkheden expliciet in de Issue-body met GitHub-verwijzingen, bijvoorbeeld `Depends on #1, #3` of `Blokkeert op #1 en #3`. Houd Issues die parallel onderzocht kunnen worden uit elkaar. Gebruik de afhankelijkheden om de volgorde op het Project-board te bepalen.
 
 ## Issue → branch → PR
 1. Elke wijziging start met een Issue met context, acceptatiecriteria en eventuele risico's.
@@ -28,9 +33,10 @@ Aanbevolen velden: Priority (`P0`–`P3`), Area, Size (`XS/S/M/L`) en Release/Mi
 
 ## GitHub Actions
 - **Nu:** de YAML-syntaxis van GitHub-configuratie controleren. Deze check zegt niets over de correctheid van applicatiecode.
+- **Label-sync:** `Sync labels` beheert repositorylabels en labelt de startbacklog; controleer de Action-run.
 - **Na stackkeuze:** build, formatter/linter, typecheck, unit tests en integratietests verplicht maken.
 - **Vóór release:** end-to-end tests van de bonnetjes- en factuurflow, dependency/security checks, migratiecontrole en hersteltest.
-- Actions krijgen minimale `permissions`; secrets staan alleen in GitHub Secrets/Environments en nooit in code of logs.
+- Workflows krijgen minimale `permissions`; secrets staan alleen in GitHub Secrets/Environments en nooit in code of logs.
 - Gebruik bij productiegevoelige workflows pinning naar een gecontroleerde action-versie/SHA, dependencyupdates en review van workflowwijzigingen.
 
 ## Definition of Ready
