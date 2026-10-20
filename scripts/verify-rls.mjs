@@ -494,7 +494,13 @@ async function main() {
       bucket.allowed_mime_types.includes("image/jpeg");
   });
 
-  await tryCleanup();
+  const cleanupOk = await tryCleanup();
+  if (cleanupOk) {
+    results.push({ name: "Opruiming synthetische testdata", ok: true });
+  } else {
+    failures.push({ name: "Opruiming synthetische testdata", message: "opruiming niet volledig geslaagd" });
+    results.push({ name: "Opruiming synthetische testdata", ok: false });
+  }
 
   console.log("\nTestresultaat");
   console.table(results);
