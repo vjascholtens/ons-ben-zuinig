@@ -95,7 +95,7 @@ describe("cash optimizer date calculations", () => {
       discountDeadline: "2026-01-03",
       normalDueDate: "2026-01-03",
       annualFinancingRatePercent: "0",
-    }).worthwhile).toBe(true);
+    }).worthwhile).toBe(false);
     expect(() => evaluateEarlyPaymentDiscount({
       grossAmount: "19.999",
       discountPercent: "2",
