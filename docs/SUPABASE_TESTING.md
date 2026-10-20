@@ -27,7 +27,7 @@ OBZ_TEST_USER_C_PASSWORD=<C_PASSWORD>
 OBZ_TEST_BASE_URL=http://localhost:3000
 ```
 
-The script also accepts `NEXT_PUBLIC_SUPABASE_ANON_KEY` for the publishable key for compatibility with an older local setup. Do not use a service-role key as that value.
+Use the current app variable `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`; the application checks this exact name before enabling the Supabase-backed flow.
 
 ## Run the verification
 
@@ -58,7 +58,7 @@ The script exits with code 1 if any assertion fails, 2 if required local configu
 - simultaneous first uploads by fresh user C both succeed, produce two unique records/paths, and share one newly created administration;
 - the Storage bucket is private and has the expected size limit and MIME allowlist.
 
-Successfully created test receipt records and their corresponding objects are removed at the end using the local service-role client. The script never removes accounting entities or any rows whose IDs it did not receive from its own successful test uploads.
+Successfully created test receipt records and their corresponding objects are removed at the end using the local service-role client. A cleanup failure makes the run fail and preserves metadata if object removal fails, rather than knowingly creating an orphan. The script never removes accounting entities or any rows whose IDs it did not receive from its own successful test uploads.
 
 ## Limits and manual verification still required
 
