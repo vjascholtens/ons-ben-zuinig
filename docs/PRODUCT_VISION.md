@@ -1,43 +1,55 @@
 # Productvisie
 
-## Probleem
-Bonnetjes zitten verspreid over papier, foto's en e-mail. Facturen, betalingen en btw-administratie moeten handmatig met elkaar worden verbonden. Dat kost tijd en vergroot de kans op fouten en ontbrekende bewijsstukken.
-
 ## Visie
-**Maak de administratie vanaf de telefoon eenvoudig, maar houd de financiële uitkomst controleerbaar.** Een gebruiker legt een bewijsstuk vast, controleert voorgestelde gegevens en volgt daarna de factuur of uitgave tot en met betaling, boeking en rapportage.
+**Maak de administratie vanaf de telefoon eenvoudig, maar houd iedere financiële uitkomst controleerbaar.** Een gebruiker legt bewijsstukken vast, controleert voorgestelde gegevens en volgt facturen en uitgaven van bronstuk tot betaling, boeking en rapportage.
 
-## Primaire gebruiker
-Voor de eerste versie gaan we uit van één zelfstandige ondernemer/kleine onderneming die de eigen administratie voert, eventueel met een boekhouder die exports controleert. Meerdere ondernemingen, rollen en gebruikers moeten bewust worden besloten voordat het datamodel vastligt.
+## MVP-gebruiker en uitgangspunt
+De eerste release is gericht op **één hoofdgebruiker die één Nederlandse onderneming/administratie beheert**. We voegen in de MVP geen uitnodigingen voor extra gebruikers of apart boekhouder-account toe. De boekhouder kan de afgesproken gegevensexport ontvangen.
 
-## Kernprocessen
-1. **Vastleggen:** foto maken of PDF uploaden; datum, bestand en herkomst vastleggen.
-2. **Herkennen:** leverancier, factuurnummer, factuurdatum, betaaltermijn, bedragen, btw-tarieven en valuta voorstellen.
-3. **Controleren:** gebruiker controleert en corrigeert de herkenning; onzekere velden worden gemarkeerd.
-4. **Verwerken:** bewijsstuk aan een klant/leverancier, factuur en boeking koppelen; dubbele documenten signaleren.
-5. **Factureren:** conceptfactuur opstellen, factuurnummer toekennen volgens vastgelegde regels, PDF maken en e-mail verzenden.
-6. **Opvolgen:** openstaand/betaald/achterstallig tonen en herinneringen voorbereiden of versturen.
-7. **Overzicht en export:** inkomsten, uitgaven, open posten, btw-overzicht en gegevens voor de boekhouder leveren.
+Dit is een werkbare startaanname. Als de onderneming meerdere juridische entiteiten of meerdere dagelijks actieve gebruikers heeft, moeten we dat vóór implementatie van het financiële datamodel herzien.
 
-## MVP: wel
-- Mobielvriendelijke webapp/PWA voor foto en upload.
-- Inkomende bonnetjes en facturen met menselijke controle van OCR.
-- Klanten, leveranciers en verkoopfacturen.
-- E-mail voor het versturen van verkoopfacturen en ontvangststatussen.
-- Basisboekingen, open posten, eenvoudige rapportages en boekhoudexport.
-- Audit trail, rollen/toegangscontrole passend bij het gekozen gebruikersmodel, back-ups en privacy-basics.
+Het datamodel moet records vanaf het begin expliciet aan een administratie/onderneming koppelen. Daarmee kunnen we later meerdere ondernemingen of rollen toevoegen zonder te vertrouwen op impliciete globale gegevens. Dat is geen vrijbrief om multi-tenant access-control nu al volledig te bouwen: autorisatie moet bij iedere query en mutatie server-side worden afgedwongen.
 
-## Niet automatisch in de eerste MVP
-- Volledige vervanging van ieder professioneel boekhoudpakket.
+## MVP-doelen
+1. Een bonnetje of inkoopfactuur vanaf een telefoon vastleggen en veilig terugvinden.
+2. OCR stelt leverancier, datum, factuurnummer, bedragen, btw en valuta voor; de gebruiker controleert en corrigeert vóór verwerking.
+3. Een leveranciers- en klantenbestand bijhouden.
+4. Uitgaven categoriseren en controleerbaar boeken volgens de gevalideerde boekhoudkundige scope.
+5. Verkoopfacturen maken, als PDF vastleggen en per e-mail verzenden.
+6. Factuurstatussen beheren, betalingen handmatig registreren en open posten volgen.
+7. Een maandelijkse totaalmail kunnen versturen met overeengekomen totalen, openstaande posten en documenten die aandacht vragen.
+8. Financiële overzichten en export voor de boekhouder leveren.
+9. Back-ups, herstel, audit trail, privacy en toegangscontrole vanaf het begin meenemen.
+
+## Eerste verticale slice
+We bouwen en demonstreren eerst de kleinste volledige route:
+**mobiele foto/upload → veilig documentrecord → gecontroleerde metadata/OCR-voorstellen → document terugvinden**.
+
+Pas daarna breiden we uit naar definitieve uitgaven en boekingen. OCR-resultaten worden niet automatisch definitief geboekt.
+
+## Buiten de MVP
 - Automatisch indienen van belastingaangiften.
 - Automatische betalingen of bankopdrachten.
-- Alle bankkoppelingen, alle e-mailproviders of volledige IMAP-sync.
-- Volledige Peppol/e-facturatie-integratie tenzij dit na scope- en eisenonderzoek als MVP-vereiste blijkt.
-- Onbeheerde automatische boekingen op basis van OCR/AI zonder bevestiging.
+- Een live bankkoppeling of automatische bankafstemming (later evalueren).
+- Volledige mailbox-sync/IMAP; inkomende facturen starten met upload of een beperkte integratie na besluit.
+- Afzonderlijke inlogaccounts/rollen voor boekhouder of medewerkers.
+- Volledig uitgewerkte multi-onderneming-UI.
+- Peppol/e-facturatie tenzij actuele eisen of gebruikersbehoefte dit noodzakelijk maken.
+- Offline wijzigingen aan financiële administratie. De eerste PWA is online-first om synchronisatieconflicten en onbeveiligde lokale financiële opslag te voorkomen.
+
+## Principes
+- Financiële juistheid gaat vóór automatisering.
+- Gebruik decimal- of integer-centenlogica, nooit floating-point voor geldberekeningen.
+- Definitieve boekingen worden niet stil overschreven; correcties zijn traceerbaar.
+- Bronbestand, OCR-uitkomst, door de gebruiker bevestigde waarden en boeking blijven onderscheidbaar.
+- Geen echte bonnetjes, klantgegevens of andere financiële persoonsgegevens in Issues, testfixtures of logs.
+- Nederlandse fiscale en boekhoudkundige regels worden gevalideerd met actuele officiële informatie en een boekhoudkundige deskundige voordat ze als ondersteund worden gepresenteerd.
 
 ## Succescriteria
-- Een gebruiker kan een bon op een telefoon in enkele stappen vastleggen.
-- Elk geboekt bedrag is te herleiden tot een bewijsstuk en een wijzigings-/boekingshistorie.
-- De gebruiker ziet herkenningsfouten en kan ze herstellen vóór het boeken.
-- Een verkoopfactuur kan worden aangemaakt, verstuurd en gevolgd.
-- Een back-up kan aantoonbaar worden teruggezet.
-- Berekeningen en btw-behandeling hebben geautomatiseerde tests en zijn inhoudelijk gevalideerd.
+- De gebruiker kan op een gangbare telefoon een bon uploaden en terugvinden.
+- Fouten, retries en onzekere OCR-velden zijn zichtbaar en herstelbaar.
+- Elk geboekt bedrag is te herleiden tot bronbewijs en wijzigingshistorie.
+- Een factuur kan worden aangemaakt, verstuurd en opgevolgd.
+- De maandelijkse samenvatting gebruikt dezelfde gevalideerde brongegevens als de rapportage.
+- Een back-up kan aantoonbaar worden hersteld.
+- Geld- en btw-berekeningen hebben geautomatiseerde tests met inhoudelijk gevalideerde voorbeelden.
