@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { calculateTotals, roundDecimalToCents } from "../../scripts/fixture-math.mjs";
+import { calculateTotals, roundDecimalToCents, type SyntheticVatCode } from "../../scripts/fixture-math.mjs";
 
-const line = (eenheidsprijs: string, tarief = "21.00", btw_code = "standaard") => ({
+const line = (eenheidsprijs: string, tarief = "21.00", btw_code: SyntheticVatCode = "standaard") => ({
   omschrijving: "Synthetische testregel",
   aantal: "1.00",
   eenheidsprijs,
