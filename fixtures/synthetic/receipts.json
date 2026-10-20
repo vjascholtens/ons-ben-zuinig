@@ -1,0 +1,172 @@
+{
+  "version": 1,
+  "currencyCode": "EUR",
+  "maximumUploadBytes": 15728640,
+  "roundingMethod": "half_up_per_line",
+  "roundingCases": [
+    { "id": "half-cent", "rawAmount": "0.005", "expectedRounded": "0.01" },
+    { "id": "below-half-cent", "rawAmount": "0.004", "expectedRounded": "0.00" },
+    { "id": "one-euro-half-cent", "rawAmount": "1.005", "expectedRounded": "1.01" }
+  ],
+  "oversizedFixture": {
+    "filename": "oversized-limit-test.pdf",
+    "mimeType": "application/pdf",
+    "minimumBytes": 15728641,
+    "purpose": "synthetic upload must be rejected above the 15 MiB limit"
+  },
+  "scenarios": [
+    {
+      "id": "vat-21-single-line",
+      "supplier": "Voorbeeldwinkel Noord",
+      "documentDate": "2026-10-15",
+      "invoiceNumber": "SYN-2101",
+      "vatTreatment": "standard",
+      "vatRate": "21.00",
+      "netAmount": "12.34",
+      "vatAmount": "2.59",
+      "grossAmount": "14.93",
+      "lines": [
+        { "description": "Demo kabel", "netAmount": "12.34", "vatRate": "21.00", "vatAmount": "2.59" }
+      ]
+    },
+    {
+      "id": "vat-9-two-lines",
+      "supplier": "Fictieve Bakkerij",
+      "documentDate": "2026-10-12",
+      "invoiceNumber": "SYN-0902",
+      "vatTreatment": "standard",
+      "vatRate": "9.00",
+      "netAmount": "15.00",
+      "vatAmount": "1.35",
+      "grossAmount": "16.35",
+      "lines": [
+        { "description": "Demo brood", "netAmount": "8.00", "vatRate": "9.00", "vatAmount": "0.72" },
+        { "description": "Demo gebak", "netAmount": "7.00", "vatRate": "9.00", "vatAmount": "0.63" }
+      ]
+    },
+    {
+      "id": "vat-zero-rate",
+      "supplier": "Synthetische Exportdemo",
+      "documentDate": "2026-10-11",
+      "invoiceNumber": "SYN-0003",
+      "vatTreatment": "zero_rate",
+      "vatRate": "0.00",
+      "vatReason": "fictieve expliciete testgrond voor nultarief",
+      "netAmount": "27.50",
+      "vatAmount": "0.00",
+      "grossAmount": "27.50",
+      "lines": [
+        { "description": "Demo levering nultarief", "netAmount": "27.50", "vatRate": "0.00", "vatAmount": "0.00" }
+      ]
+    },
+    {
+      "id": "vat-exempt",
+      "supplier": "Demo Vrijgestelde Diensten",
+      "documentDate": "2026-10-10",
+      "invoiceNumber": "SYN-0004",
+      "vatTreatment": "exempt",
+      "vatRate": null,
+      "vatReason": "synthetisch voorbeeld vrijstelling",
+      "netAmount": "8.50",
+      "vatAmount": "0.00",
+      "grossAmount": "8.50",
+      "lines": [
+        { "description": "Demo vrijgestelde dienst", "netAmount": "8.50", "vatRate": null, "vatAmount": "0.00" }
+      ]
+    },
+    {
+      "id": "vat-reverse-charge",
+      "supplier": "Demo Verleggingsdiensten",
+      "documentDate": "2026-10-09",
+      "invoiceNumber": "SYN-0005",
+      "vatTreatment": "reverse_charge",
+      "vatRate": null,
+      "vatReason": "synthetisch geval btw verlegd",
+      "netAmount": "120.00",
+      "vatAmount": "0.00",
+      "grossAmount": "120.00",
+      "lines": [
+        { "description": "Demo dienst btw verlegd", "netAmount": "120.00", "vatRate": null, "vatAmount": "0.00" }
+      ]
+    },
+    {
+      "id": "round-half-up",
+      "supplier": "Demo Afronding Noord",
+      "documentDate": "2026-10-08",
+      "invoiceNumber": "SYN-0006",
+      "vatTreatment": "standard",
+      "vatRate": "21.00",
+      "netAmount": "0.05",
+      "vatAmount": "0.01",
+      "grossAmount": "0.06",
+      "lines": [
+        { "description": "Demo miniartikel", "netAmount": "0.05", "vatRate": "21.00", "vatAmount": "0.01" }
+      ],
+      "roundingCaseIds": ["half-cent", "one-euro-half-cent"]
+    },
+    {
+      "id": "round-below-half",
+      "supplier": "Demo Afronding Zuid",
+      "documentDate": "2026-10-07",
+      "invoiceNumber": "SYN-0007",
+      "vatTreatment": "standard",
+      "vatRate": "21.00",
+      "netAmount": "0.02",
+      "vatAmount": "0.00",
+      "grossAmount": "0.02",
+      "lines": [
+        { "description": "Demo afrondingsartikel", "netAmount": "0.02", "vatRate": "21.00", "vatAmount": "0.00" }
+      ],
+      "roundingCaseIds": ["below-half-cent"]
+    },
+    {
+      "id": "mixed-vat-multiple-lines",
+      "supplier": "Synthetische Warenmix",
+      "documentDate": "2026-10-06",
+      "invoiceNumber": "SYN-0008",
+      "vatTreatment": "standard",
+      "vatRate": null,
+      "netAmount": "18.00",
+      "vatAmount": "2.55",
+      "grossAmount": "20.55",
+      "lines": [
+        { "description": "Demo artikel algemeen tarief", "netAmount": "10.00", "vatTreatment": "standard", "vatRate": "21.00", "vatAmount": "2.10" },
+        { "description": "Demo artikel verlaagd tarief", "netAmount": "5.00", "vatTreatment": "standard", "vatRate": "9.00", "vatAmount": "0.45" },
+        { "description": "Demo artikel nultarief", "netAmount": "3.00", "vatTreatment": "zero_rate", "vatRate": "0.00", "vatAmount": "0.00" }
+      ]
+    },
+    {
+      "id": "vat-9-three-lines",
+      "supplier": "Fictieve Lunchzaak",
+      "documentDate": "2026-10-05",
+      "invoiceNumber": "SYN-0009",
+      "vatTreatment": "standard",
+      "vatRate": "9.00",
+      "netAmount": "10.00",
+      "vatAmount": "0.90",
+      "grossAmount": "10.90",
+      "lines": [
+        { "description": "Demo lunch item A", "netAmount": "3.33", "vatRate": "9.00", "vatAmount": "0.30" },
+        { "description": "Demo lunch item B", "netAmount": "3.33", "vatRate": "9.00", "vatAmount": "0.30" },
+        { "description": "Demo lunch item C", "netAmount": "3.34", "vatRate": "9.00", "vatAmount": "0.30" }
+      ]
+    },
+    {
+      "id": "vat-21-four-small-lines",
+      "supplier": "Voorbeeldwinkel Zuid",
+      "documentDate": "2026-10-04",
+      "invoiceNumber": "SYN-2110",
+      "vatTreatment": "standard",
+      "vatRate": "21.00",
+      "netAmount": "0.20",
+      "vatAmount": "0.04",
+      "grossAmount": "0.24",
+      "lines": [
+        { "description": "Demo onderdeel 1", "netAmount": "0.05", "vatRate": "21.00", "vatAmount": "0.01" },
+        { "description": "Demo onderdeel 2", "netAmount": "0.05", "vatRate": "21.00", "vatAmount": "0.01" },
+        { "description": "Demo onderdeel 3", "netAmount": "0.05", "vatRate": "21.00", "vatAmount": "0.01" },
+        { "description": "Demo onderdeel 4", "netAmount": "0.05", "vatRate": "21.00", "vatAmount": "0.01" }
+      ]
+    }
+  ]
+}
