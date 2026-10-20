@@ -1,0 +1,25 @@
+name: Tech task / chore
+description: Technische verbetering, onderhoud of onderzoek.
+title: "chore: "
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Gewenste uitkomst
+      description: Welk probleem of risico lost deze taak op?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope en aanpak
+      description: Beschrijf wat wel en niet wordt aangepast.
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Controle / acceptatiecriteria
+      description: Hoe stellen we vast dat de taak klaar is?
+    validations:
+      required: true
