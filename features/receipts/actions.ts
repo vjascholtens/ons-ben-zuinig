@@ -34,7 +34,6 @@ export async function saveReceiptReview(_previous: ReviewActionState, formData: 
       vatAmount: formData.get("vatAmount"),
       grossAmount: formData.get("grossAmount"),
       vatTreatment: formData.get("vatTreatment"),
-      vatRate: formData.get("vatRate") || undefined,
       currencyCode: formData.get("currencyCode") || "EUR",
     });
     if (!confirmedResult.success) {
