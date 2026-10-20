@@ -1,0 +1,49 @@
+name: Bootstrap pnpm lockfile
+
+on:
+  push:
+    branches:
+      - feat/13-nextjs-pwa-scaffold
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bootstrap-pnpm-lockfile
+  cancel-in-progress: false
+
+jobs:
+  generate-lockfile:
+    name: Resolve and commit the first lockfile
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the scaffold branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.14.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Generate lockfile without running package scripts
+        run: pnpm install --lockfile-only --ignore-scripts
+
+      - name: Commit lockfile
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- pnpm-lock.yaml; then
+            echo "Lockfile is already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pnpm-lock.yaml
+          git commit -m "chore: generate pnpm lockfile"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
