@@ -65,4 +65,6 @@ create policy "Owners can review their receipt extractions"
   );
 
 revoke all privileges on table public.receipt_extractions from anon, authenticated;
-grant select, insert, update on table public.receipt_extractions to authenticated;
+grant select, insert on table public.receipt_extractions to authenticated;
+grant update (confirmed_data, decision_status, reviewed_at, reviewed_by, updated_at)
+  on table public.receipt_extractions to authenticated;
