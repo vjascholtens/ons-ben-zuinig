@@ -87,7 +87,7 @@ describe("receipt metadata insert failure cleanup", () => {
     expect(mocks.upload).toHaveBeenCalledTimes(1);
     expect(mocks.remove).toHaveBeenCalledTimes(1);
     expect(mocks.remove.mock.calls[0]?.[0]).toEqual([
-      expect.stringMatching(/^11111111-1111-4111-8111-111111111111\\/22222222-2222-4222-8222-222222222222\\/.+\\.pdf$/),
+      expect.stringMatching(/^11111111-1111-4111-8111-111111111111[/]22222222-2222-4222-8222-222222222222[/].+[.]pdf$/),
     ]);
   });
 
@@ -100,7 +100,7 @@ describe("receipt metadata insert failure cleanup", () => {
     const payload = await response.json();
 
     expect(response.status).toBe(500);
-    expect(payload.error).toMatch(/niet konden worden opgeruimd/i);
+    expect(payload.error).toMatch(/tijdelijke upload kon niet worden opgeruimd/i);
     expect(mocks.remove).toHaveBeenCalledTimes(1);
   });
 });
