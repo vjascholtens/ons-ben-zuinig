@@ -15,7 +15,7 @@ describe("getReceiptFileError", () => {
   });
 
   it("rejects unsupported file types", () => {
-    expect(getReceiptFileError({ name: "script.js", type: "text/javascript", size: 512 })).toContain("PDF or ondersteunde foto");
+    expect(getReceiptFileError({ name: "script.js", type: "text/javascript", size: 512 })).toContain("PDF of ondersteunde foto");
   });
 
   it("rejects SVGs even when the browser reports them as images", () => {
