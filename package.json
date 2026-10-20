@@ -14,7 +14,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "fixtures": "node scripts/generate-fixtures.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
