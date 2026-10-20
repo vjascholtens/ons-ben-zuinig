@@ -1,12 +1,10 @@
 "use server";
-
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
 export type ReviewActionState = { ok: boolean; message: string };
 const decimalString = /^\d{1,10}(?:\.\d{1,2})?$/;
 const treatments = new Set(["standard", "zero_rate", "exempt", "reverse_charge", "kor"]);
-
 export async function saveReceiptReview(_previous: ReviewActionState, formData: FormData): Promise<ReviewActionState> {
   const receiptId = String(formData.get("receiptId") ?? ""), decision = String(formData.get("decision") ?? "");
   if (!/^[0-9a-f-]{36}$/i.test(receiptId)) return { ok: false, message: "Dit document-ID is ongeldig." };
@@ -16,7 +14,6 @@ export async function saveReceiptReview(_previous: ReviewActionState, formData: 
   if (authError || typeof userId !== "string") return { ok: false, message: "Log in om dit voorstel te beoordelen." };
   const { data: existing, error: lookupError } = await supabase.from("receipt_extractions").select("receipt_id").eq("receipt_id", receiptId).maybeSingle();
   if (lookupError || !existing) return { ok: false, message: "Er is nog geen opgeslagen voorstel voor dit document." };
-
   let confirmedData: Record<string, string> | null = null;
   if (decision === "confirmed") {
     const value = (name: string) => String(formData.get(name) ?? "").trim();
