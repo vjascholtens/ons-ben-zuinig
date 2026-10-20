@@ -204,7 +204,7 @@ export function evaluateEarlyPaymentDiscount(input: {
   const dueDate = parseDate(input.normalDueDate);
   const daysPaidEarly = Math.max(0, Math.round((dueDate.utc - deadline.utc) / DAY_MS));
   const savingsCents = roundHalfUp(amountCents * discountRate, PERCENT_SCALE * 100n);
-  const worthwhile = discountRate * 365n >= financingRate * BigInt(daysPaidEarly);
+  const worthwhile = discountRate > 0n && discountRate * 365n >= financingRate * BigInt(daysPaidEarly);
   return {
     savingsAmount: formatScaled(savingsCents, 2),
     daysPaidEarly,
