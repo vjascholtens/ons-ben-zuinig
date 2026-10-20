@@ -1,0 +1,41 @@
+name: Feature / user story
+description: Beschrijf een gebruikersprobleem, de gewenste uitkomst en acceptatiecriteria.
+title: "feat: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Houd één Issue bij voorkeur klein genoeg om in ongeveer 1–3 dagen af te ronden.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Probleem en gebruikersdoel
+      description: Wie wil wat doen en waarom?
+      placeholder: Als [gebruiker] wil ik [doel], zodat [waarde].
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptatiecriteria
+      description: Beschrijf testbaar gedrag, niet alleen implementatiestappen.
+      placeholder: |
+        - [ ] Gegeven ... wanneer ... dan ...
+        - [ ] Fouten en randgevallen zijn beschreven.
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: Data-, security- of boekhoudkundige impact
+      description: Benoem gevoelige data, geldberekeningen, autorisatie, migraties of privacy-effecten.
+      placeholder: Geen bekende impact / beschrijf hier de impact.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Afhankelijkheden en notities
+      description: Link andere Issues of besluiten.
+    validations:
+      required: false
