@@ -1,172 +1,290 @@
 {
-  "version": 1,
-  "currencyCode": "EUR",
-  "maximumUploadBytes": 15728640,
-  "roundingMethod": "half_up_per_line",
-  "roundingCases": [
-    { "id": "half-cent", "rawAmount": "0.005", "expectedRounded": "0.01" },
-    { "id": "below-half-cent", "rawAmount": "0.004", "expectedRounded": "0.00" },
-    { "id": "one-euro-half-cent", "rawAmount": "1.005", "expectedRounded": "1.01" }
+  "versie": 1,
+  "valuta": "EUR",
+  "maximale_upload_bytes": "15728640",
+  "afronding": "half_up_per_regel",
+  "afrondingsgevallen": [
+    {
+      "id": "prijs-0.335",
+      "bedrag": "0.335",
+      "verwacht": "0.34"
+    },
+    {
+      "id": "onder-halve-cent",
+      "bedrag": "0.334",
+      "verwacht": "0.33"
+    },
+    {
+      "id": "exacte-halve-cent",
+      "bedrag": "1.005",
+      "verwacht": "1.01"
+    },
+    {
+      "id": "onder-halve-cent",
+      "bedrag": "0.004",
+      "verwacht": "0.00"
+    }
   ],
-  "oversizedFixture": {
-    "filename": "oversized-limit-test.pdf",
-    "mimeType": "application/pdf",
-    "minimumBytes": 15728641,
-    "purpose": "synthetic upload must be rejected above the 15 MiB limit"
+  "te_groot_bestand": {
+    "bestandsnaam": "synthetic-oversized-limit-test.pdf",
+    "mime_type": "application/pdf",
+    "bytes": "15728641",
+    "doel": "Upload moet worden geweigerd boven de grens van 15 MiB"
   },
-  "scenarios": [
+  "fixtures": [
     {
-      "id": "vat-21-single-line",
-      "supplier": "Voorbeeldwinkel Noord",
-      "documentDate": "2026-10-15",
-      "invoiceNumber": "SYN-2101",
-      "vatTreatment": "standard",
-      "vatRate": "21.00",
-      "netAmount": "12.34",
-      "vatAmount": "2.59",
-      "grossAmount": "14.93",
-      "lines": [
-        { "description": "Demo kabel", "netAmount": "12.34", "vatRate": "21.00", "vatAmount": "2.59" }
-      ]
-    },
-    {
-      "id": "vat-9-two-lines",
-      "supplier": "Fictieve Bakkerij",
-      "documentDate": "2026-10-12",
-      "invoiceNumber": "SYN-0902",
-      "vatTreatment": "standard",
-      "vatRate": "9.00",
-      "netAmount": "15.00",
-      "vatAmount": "1.35",
-      "grossAmount": "16.35",
-      "lines": [
-        { "description": "Demo brood", "netAmount": "8.00", "vatRate": "9.00", "vatAmount": "0.72" },
-        { "description": "Demo gebak", "netAmount": "7.00", "vatRate": "9.00", "vatAmount": "0.63" }
-      ]
-    },
-    {
-      "id": "vat-zero-rate",
-      "supplier": "Synthetische Exportdemo",
-      "documentDate": "2026-10-11",
-      "invoiceNumber": "SYN-0003",
-      "vatTreatment": "zero_rate",
-      "vatRate": "0.00",
-      "vatReason": "fictieve expliciete testgrond voor nultarief",
-      "netAmount": "27.50",
-      "vatAmount": "0.00",
-      "grossAmount": "27.50",
-      "lines": [
-        { "description": "Demo levering nultarief", "netAmount": "27.50", "vatRate": "0.00", "vatAmount": "0.00" }
-      ]
-    },
-    {
-      "id": "vat-exempt",
-      "supplier": "Demo Vrijgestelde Diensten",
-      "documentDate": "2026-10-10",
-      "invoiceNumber": "SYN-0004",
-      "vatTreatment": "exempt",
-      "vatRate": null,
-      "vatReason": "synthetisch voorbeeld vrijstelling",
-      "netAmount": "8.50",
-      "vatAmount": "0.00",
-      "grossAmount": "8.50",
-      "lines": [
-        { "description": "Demo vrijgestelde dienst", "netAmount": "8.50", "vatRate": null, "vatAmount": "0.00" }
-      ]
-    },
-    {
-      "id": "vat-reverse-charge",
-      "supplier": "Demo Verleggingsdiensten",
-      "documentDate": "2026-10-09",
-      "invoiceNumber": "SYN-0005",
-      "vatTreatment": "reverse_charge",
-      "vatRate": null,
-      "vatReason": "synthetisch geval btw verlegd",
-      "netAmount": "120.00",
-      "vatAmount": "0.00",
-      "grossAmount": "120.00",
-      "lines": [
-        { "description": "Demo dienst btw verlegd", "netAmount": "120.00", "vatRate": null, "vatAmount": "0.00" }
-      ]
-    },
-    {
-      "id": "round-half-up",
-      "supplier": "Demo Afronding Noord",
-      "documentDate": "2026-10-08",
-      "invoiceNumber": "SYN-0006",
-      "vatTreatment": "standard",
-      "vatRate": "21.00",
-      "netAmount": "0.05",
-      "vatAmount": "0.01",
-      "grossAmount": "0.06",
-      "lines": [
-        { "description": "Demo miniartikel", "netAmount": "0.05", "vatRate": "21.00", "vatAmount": "0.01" }
+      "id": "btw-21-een-regel",
+      "leverancier": "Synthetische Voorbeeldwinkel Noord",
+      "datum": "2026-10-15",
+      "factuurnummer": "SYN-2101",
+      "regels": [
+        {
+          "omschrijving": "Demo kabel",
+          "aantal": "1.00",
+          "eenheidsprijs": "12.34",
+          "btw_code": "standaard",
+          "tarief": "21.00"
+        }
       ],
-      "roundingCaseIds": ["half-cent", "one-euro-half-cent"]
+      "verwacht_netto": "12.34",
+      "verwacht_btw": "2.59",
+      "verwacht_totaal": "14.93"
     },
     {
-      "id": "round-below-half",
-      "supplier": "Demo Afronding Zuid",
-      "documentDate": "2026-10-07",
-      "invoiceNumber": "SYN-0007",
-      "vatTreatment": "standard",
-      "vatRate": "21.00",
-      "netAmount": "0.02",
-      "vatAmount": "0.00",
-      "grossAmount": "0.02",
-      "lines": [
-        { "description": "Demo afrondingsartikel", "netAmount": "0.02", "vatRate": "21.00", "vatAmount": "0.00" }
+      "id": "btw-9-meerdere-regels",
+      "leverancier": "Fictieve Bakkerij",
+      "datum": "2026-10-12",
+      "factuurnummer": "SYN-0902",
+      "regels": [
+        {
+          "omschrijving": "Demo brood",
+          "aantal": "1.00",
+          "eenheidsprijs": "8.00",
+          "btw_code": "standaard",
+          "tarief": "9.00"
+        },
+        {
+          "omschrijving": "Demo gebak",
+          "aantal": "1.00",
+          "eenheidsprijs": "7.00",
+          "btw_code": "standaard",
+          "tarief": "9.00"
+        }
       ],
-      "roundingCaseIds": ["below-half-cent"]
+      "verwacht_netto": "15.00",
+      "verwacht_btw": "1.35",
+      "verwacht_totaal": "16.35"
     },
     {
-      "id": "mixed-vat-multiple-lines",
-      "supplier": "Synthetische Warenmix",
-      "documentDate": "2026-10-06",
-      "invoiceNumber": "SYN-0008",
-      "vatTreatment": "standard",
-      "vatRate": null,
-      "netAmount": "18.00",
-      "vatAmount": "2.55",
-      "grossAmount": "20.55",
-      "lines": [
-        { "description": "Demo artikel algemeen tarief", "netAmount": "10.00", "vatTreatment": "standard", "vatRate": "21.00", "vatAmount": "2.10" },
-        { "description": "Demo artikel verlaagd tarief", "netAmount": "5.00", "vatTreatment": "standard", "vatRate": "9.00", "vatAmount": "0.45" },
-        { "description": "Demo artikel nultarief", "netAmount": "3.00", "vatTreatment": "zero_rate", "vatRate": "0.00", "vatAmount": "0.00" }
-      ]
+      "id": "btw-nultarief",
+      "leverancier": "Synthetische Exportdemo",
+      "datum": "2026-10-11",
+      "factuurnummer": "SYN-0003",
+      "regels": [
+        {
+          "omschrijving": "Demo levering nultarief",
+          "aantal": "1.00",
+          "eenheidsprijs": "27.50",
+          "btw_code": "nultarief",
+          "tarief": "0.00"
+        }
+      ],
+      "verwacht_netto": "27.50",
+      "verwacht_btw": "0.00",
+      "verwacht_totaal": "27.50"
     },
     {
-      "id": "vat-9-three-lines",
-      "supplier": "Fictieve Lunchzaak",
-      "documentDate": "2026-10-05",
-      "invoiceNumber": "SYN-0009",
-      "vatTreatment": "standard",
-      "vatRate": "9.00",
-      "netAmount": "10.00",
-      "vatAmount": "0.90",
-      "grossAmount": "10.90",
-      "lines": [
-        { "description": "Demo lunch item A", "netAmount": "3.33", "vatRate": "9.00", "vatAmount": "0.30" },
-        { "description": "Demo lunch item B", "netAmount": "3.33", "vatRate": "9.00", "vatAmount": "0.30" },
-        { "description": "Demo lunch item C", "netAmount": "3.34", "vatRate": "9.00", "vatAmount": "0.30" }
-      ]
+      "id": "btw-vrijgesteld",
+      "leverancier": "Demo Vrijgestelde Diensten",
+      "datum": "2026-10-10",
+      "factuurnummer": "SYN-0004",
+      "regels": [
+        {
+          "omschrijving": "Demo vrijgestelde dienst",
+          "aantal": "1.00",
+          "eenheidsprijs": "8.50",
+          "btw_code": "vrijgesteld",
+          "tarief": "0.00"
+        }
+      ],
+      "verwacht_netto": "8.50",
+      "verwacht_btw": "0.00",
+      "verwacht_totaal": "8.50"
     },
     {
-      "id": "vat-21-four-small-lines",
-      "supplier": "Voorbeeldwinkel Zuid",
-      "documentDate": "2026-10-04",
-      "invoiceNumber": "SYN-2110",
-      "vatTreatment": "standard",
-      "vatRate": "21.00",
-      "netAmount": "0.20",
-      "vatAmount": "0.04",
-      "grossAmount": "0.24",
-      "lines": [
-        { "description": "Demo onderdeel 1", "netAmount": "0.05", "vatRate": "21.00", "vatAmount": "0.01" },
-        { "description": "Demo onderdeel 2", "netAmount": "0.05", "vatRate": "21.00", "vatAmount": "0.01" },
-        { "description": "Demo onderdeel 3", "netAmount": "0.05", "vatRate": "21.00", "vatAmount": "0.01" },
-        { "description": "Demo onderdeel 4", "netAmount": "0.05", "vatRate": "21.00", "vatAmount": "0.01" }
-      ]
+      "id": "btw-verlegd",
+      "leverancier": "Demo Verleggingsdiensten",
+      "datum": "2026-10-09",
+      "factuurnummer": "SYN-0005",
+      "regels": [
+        {
+          "omschrijving": "Demo dienst btw verlegd",
+          "aantal": "1.00",
+          "eenheidsprijs": "120.00",
+          "btw_code": "verlegd",
+          "tarief": "0.00"
+        }
+      ],
+      "verwacht_netto": "120.00",
+      "verwacht_btw": "0.00",
+      "verwacht_totaal": "120.00"
+    },
+    {
+      "id": "afronding-prijs-0-335",
+      "leverancier": "Demo Afronding Noord",
+      "datum": "2026-10-08",
+      "factuurnummer": "SYN-0006",
+      "regels": [
+        {
+          "omschrijving": "Demo miniartikel met prijs op derde decimaal",
+          "aantal": "1.00",
+          "eenheidsprijs": "0.335",
+          "btw_code": "standaard",
+          "tarief": "21.00"
+        }
+      ],
+      "verwacht_netto": "0.34",
+      "verwacht_btw": "0.07",
+      "verwacht_totaal": "0.41"
+    },
+    {
+      "id": "afronding-onder-halve-cent",
+      "leverancier": "Demo Afronding Zuid",
+      "datum": "2026-10-07",
+      "factuurnummer": "SYN-0007",
+      "regels": [
+        {
+          "omschrijving": "Demo afrondingsartikel",
+          "aantal": "1.00",
+          "eenheidsprijs": "0.334",
+          "btw_code": "standaard",
+          "tarief": "21.00"
+        }
+      ],
+      "verwacht_netto": "0.33",
+      "verwacht_btw": "0.07",
+      "verwacht_totaal": "0.40"
+    },
+    {
+      "id": "gemengde-btw-meerdere-regels",
+      "leverancier": "Synthetische Warenmix",
+      "datum": "2026-10-06",
+      "factuurnummer": "SYN-0008",
+      "regels": [
+        {
+          "omschrijving": "Demo artikel algemeen tarief",
+          "aantal": "1.00",
+          "eenheidsprijs": "10.00",
+          "btw_code": "standaard",
+          "tarief": "21.00"
+        },
+        {
+          "omschrijving": "Demo artikel verlaagd tarief",
+          "aantal": "1.00",
+          "eenheidsprijs": "5.00",
+          "btw_code": "standaard",
+          "tarief": "9.00"
+        },
+        {
+          "omschrijving": "Demo artikel nultarief",
+          "aantal": "1.00",
+          "eenheidsprijs": "3.00",
+          "btw_code": "nultarief",
+          "tarief": "0.00"
+        }
+      ],
+      "verwacht_netto": "18.00",
+      "verwacht_btw": "2.55",
+      "verwacht_totaal": "20.55"
+    },
+    {
+      "id": "btw-9-drie-regels",
+      "leverancier": "Fictieve Lunchzaak",
+      "datum": "2026-10-05",
+      "factuurnummer": "SYN-0009",
+      "regels": [
+        {
+          "omschrijving": "Demo lunch item A",
+          "aantal": "1.00",
+          "eenheidsprijs": "3.33",
+          "btw_code": "standaard",
+          "tarief": "9.00"
+        },
+        {
+          "omschrijving": "Demo lunch item B",
+          "aantal": "1.00",
+          "eenheidsprijs": "3.33",
+          "btw_code": "standaard",
+          "tarief": "9.00"
+        },
+        {
+          "omschrijving": "Demo lunch item C",
+          "aantal": "1.00",
+          "eenheidsprijs": "3.34",
+          "btw_code": "standaard",
+          "tarief": "9.00"
+        }
+      ],
+      "verwacht_netto": "10.00",
+      "verwacht_btw": "0.90",
+      "verwacht_totaal": "10.90"
+    },
+    {
+      "id": "btw-21-vier-kleine-regels",
+      "leverancier": "Synthetische Onderdelenzaak",
+      "datum": "2026-10-04",
+      "factuurnummer": "SYN-2110",
+      "regels": [
+        {
+          "omschrijving": "Demo onderdeel 1",
+          "aantal": "1.00",
+          "eenheidsprijs": "0.05",
+          "btw_code": "standaard",
+          "tarief": "21.00"
+        },
+        {
+          "omschrijving": "Demo onderdeel 2",
+          "aantal": "1.00",
+          "eenheidsprijs": "0.05",
+          "btw_code": "standaard",
+          "tarief": "21.00"
+        },
+        {
+          "omschrijving": "Demo onderdeel 3",
+          "aantal": "1.00",
+          "eenheidsprijs": "0.05",
+          "btw_code": "standaard",
+          "tarief": "21.00"
+        },
+        {
+          "omschrijving": "Demo onderdeel 4",
+          "aantal": "1.00",
+          "eenheidsprijs": "0.05",
+          "btw_code": "standaard",
+          "tarief": "21.00"
+        }
+      ],
+      "verwacht_netto": "0.20",
+      "verwacht_btw": "0.04",
+      "verwacht_totaal": "0.24"
+    },
+    {
+      "id": "kor",
+      "leverancier": "Demo Kleine Onderneming",
+      "datum": "2026-10-03",
+      "factuurnummer": "SYN-KOR10",
+      "regels": [
+        {
+          "omschrijving": "Synthetische levering KOR",
+          "aantal": "1.00",
+          "eenheidsprijs": "50.00",
+          "btw_code": "kor",
+          "tarief": "0.00"
+        }
+      ],
+      "verwacht_netto": "50.00",
+      "verwacht_btw": "0.00",
+      "verwacht_totaal": "50.00"
     }
   ]
 }
