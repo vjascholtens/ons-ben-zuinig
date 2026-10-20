@@ -4,6 +4,7 @@ import { detectAllowedReceiptType, MAX_RECEIPT_FILE_BYTES } from "@/lib/server/r
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { getOrCreateAccountingEntity } from "@/lib/server/accounting-entity";
+import { uploadInputSchema, uploadSizeSchema } from "@/lib/validation/schemas";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -99,7 +100,8 @@ export async function POST(request: NextRequest) {
   if (file.size <= 0) {
     return jsonError("Dit bestand lijkt leeg.", 400);
   }
-  if (file.size > MAX_RECEIPT_FILE_BYTES) {
+  const sizeResult = uploadSizeSchema.safeParse(file.size);
+  if (!sizeResult.success) {
     return jsonError("Het bestand is groter dan de limiet van 15 MB.", 413);
   }
 
@@ -107,6 +109,11 @@ export async function POST(request: NextRequest) {
   const detected = await detectAllowedReceiptType(bytes);
   if (!detected) {
     return jsonError("Het bestandstype kon niet veilig worden herkend. Gebruik een geldige PDF of ondersteunde foto.", 415);
+  }
+
+  const uploadInput = uploadInputSchema.safeParse({ contentType: detected.mime, size: bytes.byteLength });
+  if (!uploadInput.success) {
+    return jsonError("Het bestandstype of de bestandsgrootte is niet toegestaan.", 415);
   }
 
   const entityId = await getOrCreateAccountingEntity(supabase, userId);
