@@ -1,0 +1,57 @@
+name: Sync labels
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/labels.json"
+      - ".github/workflows/sync-labels.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: sync-repository-labels
+  cancel-in-progress: false
+
+jobs:
+  sync-labels:
+    name: Create labels and tag initial backlog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Create or update repository labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          while IFS= read -r row; do
+            name="$(jq -r '.name' <<< "$row")"
+            color="$(jq -r '.color' <<< "$row")"
+            description="$(jq -r '.description' <<< "$row")"
+            gh label create "$name" --color "$color" --description "$description" --force
+          done < <(jq -c '.[]' .github/labels.json)
+
+      - name: Apply labels to initial issues
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh issue edit 1 --add-label "P0,decision"
+          gh issue edit 2 --add-label "P0,decision"
+          gh issue edit 3 --add-label "P0,decision,epic:platform"
+          gh issue edit 4 --add-label "P0,chore,epic:platform"
+          gh issue edit 5 --add-label "P0,chore,epic:platform"
+          gh issue edit 6 --add-label "P1,feature,epic:receipts"
+          gh issue edit 7 --add-label "P0,decision,epic:platform"
+          gh issue edit 8 --add-label "P0,decision,epic:email"
+          gh issue edit 9 --add-label "P1,feature,epic,epic:accounting"
+          gh issue edit 10 --add-label "P1,feature,epic,epic:invoicing"
+          gh issue edit 11 --add-label "P1,feature,epic,epic:email"
+          gh issue edit 12 --add-label "P1,chore,epic,epic:ops"
