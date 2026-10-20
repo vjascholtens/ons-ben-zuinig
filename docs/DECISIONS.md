@@ -28,18 +28,22 @@ Belangrijke keuzes worden vastgelegd met status, context, alternatieven en gevol
 - **Eisen:** herkenning van Nederlandstalige bonnen/facturen, zichtbare onzekerheid, privacyvoorwaarden, kosten, veilige e-mailverzending en fout-/afleverstatus.
 
 ## D-005 — Nederlandse boekhoud- en btw-eisen
-- **Status:** Open · **Issue:** [#2](https://github.com/vjascholtens/ons-ben-zuinig/issues/2)
-- **Actie:** valideer factuurvelden, btw-situaties, nummering, correcties, bewaarplicht en exports met actuele officiële informatie en een boekhoudkundige deskundige.
+- **Status:** Besloten voor de eerste MVP-baseline · **Issue:** [#2](https://github.com/vjascholtens/ons-ben-zuinig/issues/2)
+- **Besluit:** documenteer 21%, 9%, wettelijke 0%-gevallen, vrijstelling, verlegging en KOR als afzonderlijke behandelingen; gebruik de verplichte basisfactuurvelden, de 15e-dag-termijn en consistente rekenkundige afronding per regel.
+- **Bronnen:** [Belastingdienst-factuureisen](https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/btw/administratie_bijhouden/facturen_maken/factuureisen/factuureisen), [afronding](https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/btw/administratie_bijhouden/facturen_maken/btw-bedrag_afronden), [tarieven en vrijstellingen](https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/btw/tarieven_en_vrijstellingen/tarieven_en_vrijstellingen), [KOR](https://www.belastingdienst.nl/wps/wcm/connect/nl/btw/content/kor-voorwaarden).
+- **Begrenzing:** algemene MVP-basis is brongecontroleerd op 20 oktober 2026; bijzondere situaties vereisen menselijke controle. Geen echte facturen of financieel advies tot de concrete ondernemingssituatie is bevestigd. Bewaarplicht/correcties/export blijven bij #20.
 
 ## D-006 — Bankkoppeling en e-facturatie
 - **Status:** Later te beoordelen
 - **Voorstel:** niet in eerste scope opnemen tenzij actuele eisen of concrete behoefte dit noodzakelijk maken.
 
 ## D-007 — Financiële dataconventies
-- **Status:** Voorstel ter formele goedkeuring · **Issue:** [#14](https://github.com/vjascholtens/ons-ben-zuinig/issues/14)
-- **Richting:** geen floating-point voor geld; exact decimaal rekenen in TypeScript en PostgreSQL `NUMERIC/DECIMAL` met expliciete precisie.
-- **Vereiste modelvelden:** valuta, btw-code/behandeling, btw-rate, grondslag, btw-bedrag, netto/bruto, factuurstatus, definitiefmakingsmoment, bronstuk, bevestigde OCR-waarden en audit-trail.
-- **Nog te bevestigen:** kolomprecisie, afronding per regel versus totaal, Nederlandse btw-codes, factuurnummering en correctieregels. Financiële schema's blijven geblokkeerd op #14 en de inhoudelijke validatie van #2.
+- **Status:** Besloten voor de eerste prototypeslice · **Issue:** [#14](https://github.com/vjascholtens/ons-ben-zuinig/issues/14)
+- **Besluit:** bedragen/totaalbedragen zijn `NUMERIC(12,2)`; geld aan TypeScript/API-grenzen is een decimale string met exacte rekenkunde (geen floating point); hoeveelheid/eenheidsprijs gebruiken `NUMERIC(12,4)`; btw-tarief `NUMERIC(5,2)); valuta is per factuur een ISO 4217-code.
+- **Btw:** elke regel bewaart behandeling, tarief of NULL, reden waar toepasselijk, grondslag, btw, netto en bruto. Nultarief, vrijstelling, verlegging en KOR zijn aparte codes.
+- **Afronding:** vaste MVP-conventie is rekenkundig afronden van btw per regel op centen.
+- **Nummering:** `public.finalize_invoice` gebruikt een counter per administratie/reeks/jaar, vergrendelt factuur en counter met `SELECT ... FOR UPDATE`, en kent het nummer alleen bij definitief maken toe. Een unieke index voorkomt dubbele definitieve nummers.
+- **Migratie:** `supabase/migrations/20261020221000_financial_core.sql`; tabellen hebben RLS en de counter is niet rechtstreeks schrijfbaar door gebruikers. De live DB-concurrencytest blijft vereist na toepassen op een apart prototype.
 
 ## D-008 — Backend en externe diensten (prototyperichting)
 - **Status:** Voorlopig besloten voor prototype, geen productie-go · **Backend:** [#7](https://github.com/vjascholtens/ons-ben-zuinig/issues/7) · **OCR/e-mail:** [#8](https://github.com/vjascholtens/ons-ben-zuinig/issues/8)
