@@ -73,22 +73,7 @@ create policy "Owners can create receipts in their entity"
     )
   );
 
-create policy "Owners can update receipts in their entity"
-  on public.receipts for update to authenticated
-  using (
-    exists (
-      select 1 from public.accounting_entities e
-      where e.id = receipts.entity_id and e.owner_user_id = (select auth.uid())
-    )
-  )
-  with check (
-    exists (
-      select 1 from public.accounting_entities e
-      where e.id = receipts.entity_id and e.owner_user_id = (select auth.uid())
-    )
-  );
-
-grant select, insert, update on public.receipts to authenticated;
+grant select, insert on public.receipts to authenticated;
 
 -- Private by default; no public URLs for receipt contents.
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
