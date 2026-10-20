@@ -14,7 +14,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:supabase-rls": "node scripts/verify-rls.mjs"
   },
   "dependencies": {
     "next": "^16.2.0",
