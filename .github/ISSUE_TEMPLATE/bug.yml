@@ -1,0 +1,35 @@
+name: Bug report
+description: Meld een reproduceerbare fout.
+title: "bug: "
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Wat gaat er mis?
+      description: Beschrijf het waargenomen gedrag en wat je verwachtte.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Stappen om te reproduceren
+      placeholder: |
+        1. Open ...
+        2. Kies ...
+        3. Bekijk ...
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact en ernst
+      description: Heeft dit invloed op gegevensverlies, geldberekeningen, privacy, toegang of alleen presentatie?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Logs of screenshots
+      description: Verwijder persoonsgegevens, factuurinhoud, tokens en andere gevoelige informatie voordat je iets plaatst.
+    validations:
+      required: false
