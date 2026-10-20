@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { detectAllowedReceiptType, MAX_RECEIPT_FILE_BYTES } from "@/lib/server/receipt-validation";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { getOrCreateAccountingEntity } from "@/lib/server/accounting-entity";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -108,30 +109,9 @@ export async function POST(request: NextRequest) {
     return jsonError("Het bestandstype kon niet veilig worden herkend. Gebruik een geldige PDF of ondersteunde foto.", 415);
   }
 
-  const { data: currentEntity, error: entityReadError } = await supabase
-    .from("accounting_entities")
-    .select("id")
-    .eq("owner_user_id", userId)
-    .maybeSingle();
-
-  if (entityReadError) {
-    return jsonError("De administratie kon niet worden opgehaald.", 500);
-  }
-
-  let entityId: string;
-  if (currentEntity) {
-    entityId = currentEntity.id;
-  } else {
-    const { data: newEntity, error: entityCreateError } = await supabase
-      .from("accounting_entities")
-      .insert({ owner_user_id: userId, name: "Mijn administratie" })
-      .select("id")
-      .single();
-
-    if (entityCreateError || !newEntity) {
-      return jsonError("De administratie kon niet worden aangemaakt. Probeer het opnieuw.", 500);
-    }
-    entityId = newEntity.id;
+  const entityId = await getOrCreateAccountingEntity(supabase, userId);
+  if (!entityId) {
+    return jsonError("De administratie kon niet worden opgehaald of aangemaakt. Probeer het opnieuw.", 500);
   }
 
   const receiptId = randomUUID();
