@@ -1,5 +1,5 @@
 import { fileTypeFromBuffer } from "file-type";
-import { MAX_RECEIPT_FILE_BYTES } from "@/lib/validation/limits";
+import { MAX_RECEIPT_FILE_BYTES } from "../validation/limits";
 
 export { MAX_RECEIPT_FILE_BYTES };
 
