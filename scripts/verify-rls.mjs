@@ -87,7 +87,7 @@ function errorCode(name) {
 }
 
 function printSummary() {
-  console.log("\\n=== OBZ LIVE RLS-SAMENVATTING (kopieer dit blok) ===");
+  console.log("\n=== OBZ LIVE RLS-SAMENVATTING (kopieer dit blok) ===");
   if (results.length === 0) {
     console.log("❌ [CFG-002] Geen checks uitgevoerd; controleer configuratie en startvoorwaarden.");
   }
