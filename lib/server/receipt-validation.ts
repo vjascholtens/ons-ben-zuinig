@@ -1,6 +1,7 @@
 import { fileTypeFromBuffer } from "file-type";
+import { MAX_RECEIPT_FILE_BYTES } from "@/lib/validation/limits";
 
-export const MAX_RECEIPT_FILE_BYTES = 15 * 1024 * 1024;
+export { MAX_RECEIPT_FILE_BYTES };
 
 const ALLOWED_MIME_EXTENSIONS: Record<string, string> = {
   "application/pdf": "pdf",
