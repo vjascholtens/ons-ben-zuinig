@@ -305,6 +305,27 @@ async function main() {
     return Boolean(entityA);
   });
 
+  let receiptJpeg;
+  await check("Eigenaar A: synthetische JPEG uploadt via de applicatie", async () => {
+    const { response, body } = await postReceipt(
+      userA,
+      syntheticFile(JPEG_BYTES, `${RUN_TAG}-a.jpg`, "image/jpeg"),
+    );
+    if (response.status !== 201 || !body.receipt?.id) {
+      throw new Error(`verwachtte HTTP 201 voor JPEG, kreeg HTTP ${response.status}`);
+    }
+    receiptJpeg = body.receipt;
+    createdReceiptIds.add(receiptJpeg.id);
+    return true;
+  });
+
+  await check("API-response bevat geen publieke/download-URL", async () => {
+    if (!receiptA) throw new Error("afhankelijk van geslaagde PDF-upload");
+    const serialized = JSON.stringify(receiptA);
+    return !serialized.includes(supabaseUrl) &&
+      !Object.keys(receiptA).some((key) => /url/i.test(key));
+  });
+
   let rowA;
   await check("Opslagpad gebruikt user-/entity-/document-ID's, niet de bestandsnaam", async () => {
     if (!receiptA || !entityA) throw new Error("afhankelijk van geslaagde eigenaarupload");
