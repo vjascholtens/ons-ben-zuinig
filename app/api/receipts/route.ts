@@ -131,6 +131,11 @@ export async function POST(request: NextRequest) {
     return jsonError("Het bestand kon niet veilig worden opgeslagen. Controleer de opslagconfiguratie.", 502);
   }
 
+  const cleanupUploadedObject = async () => {
+    const { error: cleanupError } = await supabase.storage.from(BUCKET).remove([storagePath]);
+    return !cleanupError;
+  };
+
   const { data: receipt, error: insertError } = await supabase
     .from("receipts")
     .insert({
@@ -148,9 +153,13 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (insertError || !receipt) {
-    // Best effort cleanup if metadata could not be committed.
-    await supabase.storage.from(BUCKET).remove([storagePath]);
-    return jsonError("Het documentrecord kon niet worden opgeslagen. Het uploadbestand is opgeruimd waar mogelijk.", 500);
+    const cleaned = await cleanupUploadedObject();
+    return jsonError(
+      cleaned
+        ? "Het documentrecord kon niet worden opgeslagen. Het uploadbestand is opgeruimd."
+        : "Het documentrecord kon niet worden opgeslagen en de tijdelijke upload kon niet worden opgeruimd.",
+      500,
+    );
   }
 
   return NextResponse.json(

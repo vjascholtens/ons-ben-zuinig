@@ -24,7 +24,10 @@ create policy "Owners can update their accounting entity"
   using (owner_user_id = (select auth.uid()))
   with check (owner_user_id = (select auth.uid()));
 
-grant select, insert, update on public.accounting_entities to authenticated;
+-- Supabase projects can have broad default grants. Remove them explicitly so
+-- RLS is defense in depth, not the only restriction on available operations.
+revoke all privileges on table public.accounting_entities from anon, authenticated;
+grant select, insert, update on table public.accounting_entities to authenticated;
 
 create table if not exists public.receipts (
   id uuid primary key default gen_random_uuid(),
@@ -52,6 +55,10 @@ create table if not exists public.receipts (
 create index if not exists receipts_entity_created_at_idx
   on public.receipts (entity_id, created_at desc);
 
+-- Cover the uploaded_by foreign key and its auth.users delete-restriction check.
+create index if not exists receipts_uploaded_by_idx
+  on public.receipts (uploaded_by);
+
 alter table public.receipts enable row level security;
 
 create policy "Owners can read receipts in their entity"
@@ -73,7 +80,8 @@ create policy "Owners can create receipts in their entity"
     )
   );
 
-grant select, insert on public.receipts to authenticated;
+revoke all privileges on table public.receipts from anon, authenticated;
+grant select, insert on table public.receipts to authenticated;
 
 -- Private by default; no public URLs for receipt contents.
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
