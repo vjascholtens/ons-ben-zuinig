@@ -8,8 +8,6 @@ import {
 } from "@/lib/validation/schemas";
 
 export type ReviewActionState = { ok: boolean; message: string };
-const decimalString = /^\d{1,10}(?:\.\d{1,2})?$/;
-const treatments = new Set(["standard", "zero_rate", "exempt", "reverse_charge", "kor"]);
 export async function saveReceiptReview(_previous: ReviewActionState, formData: FormData): Promise<ReviewActionState> {
   const actionInput = reviewActionInputSchema.safeParse({
     receiptId: formData.get("receiptId"),
