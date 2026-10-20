@@ -1,4 +1,4 @@
-name: Repository checks
+name: Application checks
 
 on:
   pull_request:
@@ -9,16 +9,45 @@ permissions:
   contents: read
 
 concurrency:
-  group: repo-checks-${{ github.workflow }}-${{ github.ref }}
+  group: app-ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  validate-github-yaml:
-    name: Validate GitHub YAML syntax
+  quality:
+    name: Lint, typecheck, test and build
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Validate YAML files
-        run: |
-          ruby -e 'require "yaml"; ARGV.each { |path| YAML.load_file(path); puts "Valid YAML: #{path}" }' $(find .github -type f -name '*.yml' -print)
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.14.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Production build
+        run: pnpm build
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: End-to-end smoke test
+        run: pnpm test:e2e
