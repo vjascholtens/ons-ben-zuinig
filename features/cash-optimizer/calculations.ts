@@ -27,7 +27,7 @@ export type NetherlandsCalendarOptions = {
 
 const DAY_MS = 86_400_000;
 const MONEY_SCALE = BigInt(100);
-const PERCENT_SCALE = 10_000n; // percent values with up to four decimal places
+const PERCENT_SCALE = BigInt(10000); // percent values with up to four decimal places
 
 function parseDate(date: string): { year: number; month: number; day: number; utc: number } {
   if (!/^\d{4}-\d{2}-\d{2}$/u.test(date)) throw new Error(`Invalid ISO date: ${date}`);
