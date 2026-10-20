@@ -203,3 +203,10 @@ De echte uitvoerbare backlog en afhankelijkheden staan in GitHub. Deze links zij
 - [#12 Back-ups, herstel en boekhoudexport](https://github.com/vjascholtens/ons-ben-zuinig/issues/12)
 
 Labels worden gedefinieerd in `.github/labels.json` en aangemaakt/toegewezen door de gerichte workflow `Sync labels`. De echte app-CI volgt pas na de stackkeuze.
+
+
+## Actuele guardrails en operationele taken
+
+- [#14 — Financiële dataconventies vóór het boekingsmodel](https://github.com/vjascholtens/ons-ben-zuinig/issues/14): exacte decimale bedragen, btw-velden, afronding, factuurnummering en audit trail. De app-scaffold #13 mag parallel lopen, maar financiële schema's/boekingen wachten op #14 en de benodigde validatie van #2.
+- [#15 — Back-upbeleid en herstelbewijs (RPO/RTO)](https://github.com/vjascholtens/ons-ben-zuinig/issues/15): afzonderlijke operationele taak binnen Epic #12; startvoorstel RPO ≤ 24 uur en RTO ≤ 1 werkdag, formeel te bevestigen vóór productie.
+- [#13 — Next.js PWA-scaffold](https://github.com/vjascholtens/ons-ben-zuinig/issues/13): pure app-shell/tooling mag parallel met #2 en #14 starten. Echte documentopslag/OCR wacht op #7/#8 en de privacy/security-gates.
