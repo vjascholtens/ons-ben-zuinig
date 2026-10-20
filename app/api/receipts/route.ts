@@ -4,6 +4,7 @@ import { detectAllowedReceiptType, MAX_RECEIPT_FILE_BYTES } from "@/lib/server/r
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { getOrCreateAccountingEntity } from "@/lib/server/accounting-entity";
+import { uploadInputSchema } from "@/lib/validation/receipts";
 import { uploadInputSchema, uploadSizeSchema } from "@/lib/validation/schemas";
 
 export const runtime = "nodejs";
@@ -113,6 +114,11 @@ export async function POST(request: NextRequest) {
 
   const uploadInput = uploadInputSchema.safeParse({ contentType: detected.mime, size: bytes.byteLength });
   if (!uploadInput.success) {
+    return jsonError("Het bestandstype of de bestandsgrootte is niet toegestaan.", 415);
+  }
+
+  const uploadValidation = uploadInputSchema.safeParse({ type: detected.mime, size: file.size });
+  if (!uploadValidation.success) {
     return jsonError("Het bestandstype of de bestandsgrootte is niet toegestaan.", 415);
   }
 
