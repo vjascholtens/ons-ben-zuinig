@@ -27,6 +27,6 @@ export async function saveReceiptReview(_previous: ReviewActionState, formData: 
   }
   const { data: saved, error } = await supabase.from("receipt_extractions").update({ confirmed_data: confirmedData, decision_status: decision, reviewed_at: new Date().toISOString(), reviewed_by: userId, updated_at: new Date().toISOString() }).eq("receipt_id", receiptId).select("receipt_id").single();
   if (error || !saved) return { ok: false, message: "De controle kon niet veilig worden opgeslagen." };
-  revalidatePath("/receipts"); revalidatePath(`/receipts?review=${receiptId}`);
+  revalidatePath("/receipts");
   return { ok: true, message: decision === "confirmed" ? "Gecontroleerde documentgegevens opgeslagen." : "Voorstel afgewezen." };
 }
