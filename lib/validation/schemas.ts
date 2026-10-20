@@ -47,12 +47,12 @@ const documentFields = {
   vatAmount: decimalAmountSchema,
   grossAmount: decimalAmountSchema,
   vatTreatment: vatTreatmentSchema,
-  vatRate: z.enum(["0.00", "9.00", "21.00"]).nullable().optional(),
 };
 
 export const ocrProposalSchema = z.object({
   fixtureId: z.string().trim().min(1).max(100).optional(),
   ...documentFields,
+  vatRate: z.enum(["0.00", "9.00", "21.00"]).nullable().optional(),
   currencyCode: z.string().regex(/^[A-Z]{3}$/).optional(),
 }).strict();
 
