@@ -14,12 +14,14 @@ import {
 
 describe("cash optimizer date calculations", () => {
   it("adds calendar days across month and year boundaries without local timezone dependence", () => {
+    expect(addCalendarDays("2024-02-28", 1)).toBe("2024-02-29");
     expect(addCalendarDays("2026-12-30", 3)).toBe("2027-01-02");
     expect(addCalendarDays("2026-03-01", -1)).toBe("2026-02-28");
   });
 
   it("validates ISO dates and day counts", () => {
     expect(() => addCalendarDays("2026-02-29", 1)).toThrow();
+    expect(() => addCalendarDays("1899-12-31", 1)).toThrow();
     expect(() => calculateDueDate("2026-01-01", -1)).toThrow();
     expect(() => addCalendarDays("2026-01-01", 1.5)).toThrow();
   });
@@ -99,6 +101,13 @@ describe("cash optimizer date calculations", () => {
     expect(() => evaluateEarlyPaymentDiscount({
       grossAmount: "19.999",
       discountPercent: "2",
+      discountDeadline: "2026-01-03",
+      normalDueDate: "2026-01-03",
+      annualFinancingRatePercent: "10",
+    })).toThrow();
+    expect(() => evaluateEarlyPaymentDiscount({
+      grossAmount: "19.99",
+      discountPercent: "101",
       discountDeadline: "2026-01-03",
       normalDueDate: "2026-01-03",
       annualFinancingRatePercent: "10",
