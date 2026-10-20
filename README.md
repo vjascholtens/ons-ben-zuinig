@@ -43,7 +43,7 @@ pnpm build
 pnpm test:e2e
 ```
 
-De pull-requestworkflow voert de controles automatisch uit.
+De pull-requestworkflow voert de controles automatisch uit. Genereer de volledig synthetische PDF/JPEG-bonnen en de bestandsgroottefixture met `pnpm fixtures`; het JSON-manifest in `fixtures/synthetic/receipts.json` is de ene bron voor de fixtures en hun verwachte bedragen. De testfixture van 15 MiB + 1 byte wordt alleen lokaal gegenereerd en niet als grote binary gecommit.
 
 ## Eerste documentworkflow
 
