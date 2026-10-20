@@ -43,6 +43,8 @@ pnpm build
 pnpm test:e2e
 ```
 
+Voor de live RLS-/uploadcheck op het aparte Supabase-prototype, zie [Supabase prototype testen](docs/SUPABASE_TESTING.md). Als de app lokaal draait en drie aparte testgebruikers zijn geconfigureerd, voer je `pnpm test:supabase-rls` uit.
+
 De pull-requestworkflow voert de controles automatisch uit.
 
 ## Eerste documentworkflow
