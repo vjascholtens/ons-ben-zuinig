@@ -21,7 +21,7 @@ Vereist Node.js 22 en pnpm 12.
 
 1. Maak een eigen Supabase prototype-project aan en kies expliciet Frankfurt (`eu-central-1`). Controleer eerst of de dataverwerkingsvoorwaarden voor je doel passen. Gebruik tot die tijd alleen synthetische bestanden.
 2. Kopieer `.env.example` naar `.env.local` en vul `NEXT_PUBLIC_SUPABASE_URL` en `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in. Commit nooit `.env.local` of andere credentials. Gebruik geen service-role key in de frontend.
-3. Voer de migratie `supabase/migrations/202610200001_receipt_storage.sql` toe op het prototypeproject via de Supabase CLI nadat je het juiste project hebt gelinkt, of review en voer de SQL uit in de Supabase SQL Editor.
+3. Voer de migratie `supabase/migrations/20261020205631_receipt_storage.sql` toe op het prototypeproject via de Supabase CLI nadat je het juiste project hebt gelinkt, of review en voer de SQL uit in de Supabase SQL Editor.
 4. Maak de enige toegestane login-gebruiker aan via Supabase Auth Dashboard. De app staat geen self-service accountcreatie toe.
 5. Voeg `http://localhost:3000/auth/callback` toe aan de toegestane redirect URLs van Supabase Auth.
 6. Installeer en start:
@@ -43,6 +43,8 @@ pnpm build
 pnpm test:e2e
 ```
 
+Voor de live RLS-/uploadcheck op het aparte Supabase-prototype, zie [Supabase prototype testen](docs/SUPABASE_TESTING.md). Als de app lokaal draait en drie aparte testgebruikers zijn geconfigureerd, voer je `pnpm test:supabase-rls` uit. Gebruik alleen synthetische bestanden en deel nooit credentials.
+
 De pull-requestworkflow voert de controles automatisch uit. Genereer de volledig synthetische PDF/JPEG-bonnen en de bestandsgroottefixture met `pnpm fixtures`; het JSON-manifest in `fixtures/synthetic/receipts.json` is de ene bron voor de fixtures en hun verwachte bedragen. De testfixture van 15 MiB + 1 byte wordt alleen lokaal gegenereerd en niet als grote binary gecommit.
 
 ## Eerste documentworkflow
@@ -50,7 +52,7 @@ De pull-requestworkflow voert de controles automatisch uit. Genereer de volledig
 - De server verifieert de Supabase-sessie met `getClaims()`.
 - De server controleert bestandsgrootte en het werkelijke bestandstype via binaire signatures. Client-validatie is alleen voor gebruiksgemak.
 - Het opslagpad gebruikt UUID's en niet de oorspronkelijke bestandsnaam.
-- De `receipts`-bucket is private en de migratie geeft RLS policies voor de administratie-eigenaar.
+- De `receipts`-bucket is private. De migratie schakelt RLS in, trekt onnodige standaardrechten van `anon` en `authenticated` in, en verleent alleen de tabelrechten die de MVP nodig heeft.
 - De metadata worden aan een expliciete administratie gekoppeld. Er worden nog geen bedragen, btw-velden, facturen of boekingen gemodelleerd.
 - Bij mislukken van de metadata-insert probeert de server het opgeslagen object op te ruimen.
 - Een document staat na upload op `uploaded`; OCR en financiële verwerking volgen pas na aparte provider-/domeinbesluiten.
