@@ -1,38 +1,36 @@
 # Besluitenlog
 
-Leg belangrijke keuzes hier vast. Een beslissing krijgt datum, status, context, keuze, alternatieven en gevolgen. Voeg nieuwe besluiten toe in plaats van oude beslissingen stil te herschrijven.
+Leg belangrijke keuzes hier vast. Een beslissing krijgt status, context, keuze, alternatieven en gevolgen. Werk dit document bij zodra een keuze is gemaakt.
 
 ## Open besluiten
 
 ### D-001 — Productscope en gebruiker
-- **Status:** Open
+- **Status:** Open · **GitHub:** [#1](https://github.com/vjascholtens/ons-ben-zuinig/issues/1)
 - **Vraag:** Is de eerste versie voor één ondernemer/onderneming, of moeten meerdere ondernemingen en gebruikers vanaf dag één kunnen inloggen?
 - **Waarom belangrijk:** beïnvloedt autorisatie, datamodel en teststrategie.
 
-### D-002 — App-vorm en stack
-- **Status:** Open
-- **Voorstel:** mobile-first PWA; vergelijk TypeScript/full-stack framework en alternatieven op onderhoud, ervaring, hosting en testbaarheid.
-- **Waarom belangrijk:** bepaalt projectstructuur en echte build/test-CI.
+### D-002 — Nederlandse boekhoud- en btw-eisen
+- **Status:** Open · **GitHub:** [#2](https://github.com/vjascholtens/ons-ben-zuinig/issues/2)
+- **Actie:** valideer factuurvelden, btw-situaties, nummering, correcties, bewaarplicht en exports met actuele officiële informatie en een boekhoudkundige deskundige.
 
-### D-003 — Hosting, database en bestandsopslag
-- **Status:** Open
-- **Eisen:** private opslag, gecontroleerde datalokatie, herstelbare back-ups, toegang op least-privilege basis en passende verwerkersvoorwaarden.
+### D-003 — Frontend/app-stack
+- **Status:** Open · **GitHub:** [#3](https://github.com/vjascholtens/ons-ben-zuinig/issues/3)
+- **Scope:** PWA versus native, frontend/full-stack framework, mobiele camera-ervaring, toegankelijkheid, lokale ontwikkelervaring en testbaarheid.
+- **Afhankelijkheid:** #1. Houd dit besluit gescheiden van backend- en dienstkeuzes.
 
-### D-004 — OCR-provider
-- **Status:** Open
-- **Eisen:** herkenning van Nederlandstalige facturen/bonnen, btw-regels, confidence/onzekerheid, privacyvoorwaarden, kosten en mogelijkheid tot providerwissel.
+### D-004 — Backendfundament: database, authenticatie, opslag en hosting
+- **Status:** Open · **GitHub:** [#7](https://github.com/vjascholtens/ons-ben-zuinig/issues/7)
+- **Eisen:** private documentopslag, passende datalokatie en verwerkersvoorwaarden, least-privilege toegang, herstelbare back-ups en beheersbare kosten.
+- **Afhankelijkheid:** #1; kan parallel aan #3 worden onderzocht.
 
-### D-005 — E-mailproces
-- **Status:** Open
-- **Vraag:** aparte inbox voor inkoopfacturen, providerwebhooks of volledige mailboxkoppeling? Welke service verzendt uitgaande facturen en rapporteert afleverfouten?
+### D-005 — OCR- en e-maildiensten
+- **Status:** Open · **GitHub:** [#8](https://github.com/vjascholtens/ons-ben-zuinig/issues/8)
+- **Eisen:** herkenning van Nederlandstalige bonnen/facturen, zichtbare onzekerheid, privacyvoorwaarden, kosten, veilige e-mailverzending, aflever-/foutstatus en voorkomen van dubbele verzending.
+- **Afhankelijkheid:** #1; kan parallel aan #3 en #7 worden onderzocht.
 
-### D-006 — Boekhoudkundige regels en export
+### D-006 — Bankkoppeling en e-facturatie
 - **Status:** Open
-- **Actie:** scope en rekenregels met boekhouder/accountant toetsen; gewenste export en btw-situaties vastleggen voordat de boekingskern wordt gebouwd.
-
-### D-007 — Bankkoppeling en e-facturatie
-- **Status:** Open
-- **Voorstel:** niet automatisch in MVP opnemen; eerst bewijsstukken, facturen en boekingen betrouwbaar maken. Heropenen op basis van echte behoefte/eisen.
+- **Voorstel:** niet automatisch in de MVP opnemen; eerst bewijsstukken, facturen en boekingen betrouwbaar maken. Heropenen op basis van actuele eisen en concrete behoefte.
 
 ## Beslisregel
 Geen onomkeerbare technische keuze nemen op basis van een onbevestigde productaanname. Bij een kleine, omkeerbare keuze mag de simpelste onderhoudbare optie winnen.
