@@ -3,6 +3,7 @@
 import { useState, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { formatFileSize, getReceiptFileError, type ReceiptFileLike } from "@/lib/receipt-file";
+import { syntheticMockOcrFixtures } from "@/features/receipts/mock-ocr";
 
 type ReceiptPickerProps = {
   mode: "demo" | "authenticated";
@@ -14,6 +15,7 @@ export function ReceiptPicker({ mode }: ReceiptPickerProps) {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [fixtureId, setFixtureId] = useState(syntheticMockOcrFixtures[0]?.id ?? "");
 
   async function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -41,20 +43,26 @@ export function ReceiptPicker({ mode }: ReceiptPickerProps) {
     try {
       const formData = new FormData();
       formData.set("file", file);
+      formData.set("fixtureId", fixtureId);
       const response = await fetch("/api/receipts", {
         method: "POST",
         body: formData,
         cache: "no-store",
       });
-      const payload: { error?: string; receipt?: { original_filename: string } } = await response.json();
+      const payload: { error?: string; warning?: string; receipt?: { id: string; original_filename: string }; mockOcrCreated?: boolean } = await response.json();
 
       if (!response.ok) {
         setError(payload.error ?? "Het bestand kon niet worden opgeslagen.");
         return;
       }
 
-      setNotice(`Opgeslagen: ${payload.receipt?.original_filename ?? file.name}. OCR is nog niet aangesloten.`);
-      router.refresh();
+      if (payload.receipt?.id && payload.mockOcrCreated) {
+        setNotice(`Opgeslagen: ${payload.receipt.original_filename}. Het synthetische mock-OCR-voorstel is klaar om te controleren.`);
+        router.push(`/receipts?review=${payload.receipt.id}`);
+      } else {
+        setNotice(payload.warning ?? `Opgeslagen: ${payload.receipt?.original_filename ?? file.name}. Er is geen mock-OCR-voorstel aangemaakt.`);
+        router.refresh();
+      }
     } catch {
       setError("De upload is mislukt. Controleer de verbinding en probeer het opnieuw.");
     } finally {
@@ -74,6 +82,23 @@ export function ReceiptPicker({ mode }: ReceiptPickerProps) {
       </div>
       <h3>Leg je eerste bonnetje klaar</h3>
       <p>Kies een foto of PDF. Op een telefoon kun je, afhankelijk van de browser, ook meteen de camera openen.</p>
+      {mode === "authenticated" ? (
+        <div className="grid gap-2 text-left">
+          <label htmlFor="mock-ocr-fixture" className="text-sm font-medium">Synthetisch mock-OCR-profiel</label>
+          <select
+            id="mock-ocr-fixture"
+            value={fixtureId}
+            onChange={(event) => setFixtureId(event.target.value)}
+            disabled={uploading}
+            className="min-h-11 w-full rounded-md border border-neutral-300 bg-white px-3 text-sm"
+          >
+            {syntheticMockOcrFixtures.map((fixture) => (
+              <option key={fixture.id} value={fixture.id}>{fixture.label}</option>
+            ))}
+          </select>
+          <p className="file-note">Dit profiel levert een vaste synthetische uitkomst op; het is geen OCR van de foto zelf.</p>
+        </div>
+      ) : null}
       <div className="upload-control">
         <input
           id="receipt-file"
