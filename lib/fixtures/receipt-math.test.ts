@@ -27,7 +27,7 @@ describe("receipt amount and VAT calculation boundaries", () => {
 
   it("does not calculate VAT for zero-rated, exempt, reverse-charge, or KOR lines", () => {
     for (const code of ["nultarief", "vrijgesteld", "verlegd", "kor"]) {
-      expect(calculateTotals({ regels: [line("10.00", "0.00", code)] })).toEqual({
+      expect(calculateTotals({ regels: [line("10.00", "0.00", code as SyntheticVatCode)] })).toEqual({
         netto: "10.00",
         btw: "0.00",
         totaal: "10.00",
@@ -39,6 +39,6 @@ describe("receipt amount and VAT calculation boundaries", () => {
     expect(() => calculateTotals({ regels: [line("10.00", "20.00")] })).toThrow();
     expect(() => calculateTotals({ regels: [line("-1.00")] })).toThrow();
     expect(() => calculateTotals({ regels: [] })).toThrow();
-    expect(() => calculateTotals({ regels: [line("10.00", "0.00", "unknown")] })).toThrow();
+    expect(() => calculateTotals({ regels: [line("10.00", "0.00", "unknown" as unknown as SyntheticVatCode)] })).toThrow();
   });
 });
