@@ -40,7 +40,7 @@ describe("server input schemas", () => {
   });
 
   it("validates confirmed document data independently from the OCR proposal", () => {
-    const { fixtureId: _fixtureId, ...confirmed } = proposal;
+    const confirmed = Object.fromEntries(Object.entries(proposal).filter(([key]) => key !== "fixtureId"));
     const parsed = confirmedDocumentDataSchema.safeParse(confirmed);
     expect(parsed.success).toBe(true);
     if (parsed.success) expect(parsed.data.currencyCode).toBe("EUR");
