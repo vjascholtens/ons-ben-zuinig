@@ -211,7 +211,7 @@ async function getReceipt(context, receiptId) {
 }
 
 async function tryCleanup() {
-  if (createdReceiptIds.size === 0) return;
+  if (createdReceiptIds.size === 0) return true;
   const ids = [...createdReceiptIds];
   const { data: rows, error: selectError } = await adminClient
     .from("receipts")
